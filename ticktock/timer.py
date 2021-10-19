@@ -4,16 +4,15 @@ import time
 from dataclasses import dataclass
 from typing import Dict, Optional
 
+from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.utils import format_ns_interval
-
-DEFAULT_PERIOD = 2.0
 
 
 class ClockCollection:
     def __init__(self, period: Optional[float] = None) -> None:
         self.clocks: Dict[str, Clock] = {}
         self._last_refresh_time_s: Optional[float] = None
-        self._period: float = period or DEFAULT_PERIOD
+        self._period: float = period or CURRENT_CONFIGURATION["DEFAULT_PERIOD"]
 
     def update(self):
         if (
