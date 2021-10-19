@@ -75,7 +75,7 @@ class Clock:
         self,
         name: str = None,
         collection: Optional[ClockCollection] = None,
-        tick_time_ns: Optional[float] = None,
+        tick_time_ns: Optional[int] = None,
         tick_frame_info: Optional[inspect.FrameInfo] = None,
     ) -> None:
         self.collection: ClockCollection = collection or _TICKTOCK_CLOCKS
@@ -91,7 +91,7 @@ class Clock:
 
         self.collection.clocks[self._unique_id] = self
 
-        self._tick_time_ns: Optional[float] = tick_time_ns
+        self._tick_time_ns: Optional[int] = tick_time_ns
 
     def tick(self) -> float:
         self._tick_time_ns = time.perf_counter_ns()
@@ -108,11 +108,12 @@ class Clock:
 
         tock_time_ns = time.perf_counter_ns()
 
+        if self._tick_time_ns is None:
+            raise ValueError(f"Clock {self.name} was not ticked.")
+
         if name in self.aggregate_times:
             self.aggregate_times[name].update(tock_time_ns, self._tick_time_ns)
         else:
-            if self._tick_time_ns is None:
-                raise ValueError(f"Clock {self.name} was not ticked.")
             dt = tock_time_ns - self._tick_time_ns
             self.aggregate_times[name] = AggregateTimes(
                 last_tick_time_ns=self._tick_time_ns,
