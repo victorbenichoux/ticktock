@@ -1,11 +1,10 @@
 import inspect
-import math
 import time
-from dataclasses import dataclass
 from typing import Dict, Optional
 
 from ticktock.config import CURRENT_CONFIGURATION
-from ticktock.utils import format_ns_interval
+from ticktock.data import AggregateTimes
+from ticktock.std import StandardRenderer
 
 
 class ClockCollection:
@@ -13,60 +12,28 @@ class ClockCollection:
         self.clocks: Dict[str, Clock] = {}
         self._last_refresh_time_s: Optional[float] = None
         self._period: float = period or CURRENT_CONFIGURATION["DEFAULT_PERIOD"]
+        self.renderer = StandardRenderer()
 
     def update(self):
         if (
             self._last_refresh_time_s is None
             or time.perf_counter() - self._last_refresh_time_s > self._period
         ):
-            self.print()
+            self.render()
             self._last_refresh_time_s = time.perf_counter()
 
-    def print(self):
-        print("# Clocks")
-        for clock in self.clocks.values():
-            for key, info in clock.aggregate_times.items():
-                print(
-                    f"{clock.name} [{key}] "
-                    f"avg = {format_ns_interval(info.avg_time_ns)}, "
-                    f"last = {format_ns_interval(info.last_time_ns())}, "
-                    f"n = {info.n_periods}"
-                )
+    def render(self):
+        self.renderer.render(
+            {
+                clock.name: {
+                    name: times for name, times in clock.aggregate_times.items()
+                }
+                for _, clock in self.clocks.items()
+            }
+        )
 
 
 _TICKTOCK_CLOCKS = ClockCollection()
-
-
-@dataclass
-class TickTimeInfo:
-    file_name: str
-    line_no: str
-
-
-@dataclass
-class AggregateTimes:
-    avg_time_ns: float
-    min_time_ns: float
-    max_time_ns: float
-    last_tick_time_ns: float
-    last_tock_time_ns: float
-
-    n_periods: int = 1
-
-    def last_time_ns(self):
-        return self.last_tock_time_ns - self.last_tick_time_ns
-
-    def update(self, tock_time_ns: int, tick_time_ns: int) -> None:
-        self.last_tock_time_ns = tock_time_ns
-        self.last_tick_time_ns = tick_time_ns
-        last_time_ns: float = self.last_time_ns()
-
-        self.n_periods += 1
-        self.max_time_ns = max(last_time_ns, self.max_time_ns or -math.inf)
-        self.min_time_ns = min(last_time_ns, self.min_time_ns or math.inf)
-        self.avg_time_ns = (
-            (self.avg_time_ns or 0) * (self.n_periods - 1) + last_time_ns
-        ) / self.n_periods
 
 
 class Clock:
