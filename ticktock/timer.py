@@ -35,7 +35,7 @@ class ClockCollection:
                 )
 
 
-_INTIME_CLOCKS = ClockCollection()
+_TICKTOCK_CLOCKS = ClockCollection()
 
 
 @dataclass
@@ -78,7 +78,7 @@ class Clock:
         tick_time_ns: Optional[float] = None,
         tick_frame_info: Optional[inspect.FrameInfo] = None,
     ) -> None:
-        self.collection: ClockCollection = collection or _INTIME_CLOCKS
+        self.collection: ClockCollection = collection or _TICKTOCK_CLOCKS
 
         self.name: str = name or f"clock_{len(self.collection.clocks)}"
 
@@ -131,7 +131,7 @@ def tick(
     collection: Optional[ClockCollection] = None,
     tick_time_ns: Optional[int] = None,
 ) -> Clock:
-    collection = collection or _INTIME_CLOCKS
+    collection = collection or _TICKTOCK_CLOCKS
     if not name:
         tick_frame_info: inspect.FrameInfo = inspect.stack()[1]
         if f"{tick_frame_info.filename}:{tick_frame_info.lineno}" in collection.clocks:
