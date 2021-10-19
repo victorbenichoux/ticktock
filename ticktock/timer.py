@@ -1,20 +1,17 @@
 import inspect
 import math
-import os
 import time
 from dataclasses import dataclass
 from typing import Dict, Optional
 
-DEFAULT_PERIOD = 2
+DEFAULT_PERIOD = 2.0
 
 
 class ClockCollection:
     def __init__(self, period: Optional[float] = None) -> None:
         self.clocks: Dict[str, Clock] = {}
         self._last_refresh_time_s: Optional[float] = None
-        self._period: float = period or os.environ.get(
-            "TICKTOCK_DEFAULT_PERIOD", float(DEFAULT_PERIOD)
-        )
+        self._period: float = period or DEFAULT_PERIOD
 
     def update(self):
         if (
@@ -29,7 +26,10 @@ class ClockCollection:
         for clock in self.clocks.values():
             for key, info in clock.aggregate_times.items():
                 print(
-                    f"Clock {clock.name} [{key}]: avg = {info.avg_time_ns}, last = {info.last_time_ns}, n = {info.n_periods}"
+                    f"Clock {clock.name} [{key}]:"
+                    f" avg = {info.avg_time_ns}, "
+                    f"last = {info.last_time_ns}, "
+                    f"n = {info.n_periods}"
                 )
 
 
@@ -45,10 +45,10 @@ class TickTimeInfo:
 @dataclass
 class AggregateTimes:
     avg_time_ns: float
-    min_time_ns: int
-    max_time_ns: int
-    last_time_ns: int
-    last_dt_ns: int
+    min_time_ns: float
+    max_time_ns: float
+    last_time_ns: float
+    last_dt_ns: float
 
     n_periods: int = 1
 
@@ -68,7 +68,7 @@ class Clock:
         self,
         name: str = None,
         collection: Optional[ClockCollection] = None,
-        tick_time_ns: Optional[int] = None,
+        tick_time_ns: Optional[float] = None,
         tick_frame_info: Optional[inspect.FrameInfo] = None,
     ) -> None:
         self.collection: ClockCollection = collection or _INTIME_CLOCKS
@@ -84,22 +84,28 @@ class Clock:
 
         self.collection.clocks[self._unique_id] = self
 
-        self._tick_time_ns: Optional[int] = tick_time_ns
+        self._tick_time_ns: Optional[float] = tick_time_ns
 
-    def tick(self) -> int:
-        self._tick_time_ns: float = time.perf_counter_ns()
+    def tick(self) -> float:
+        self._tick_time_ns = time.perf_counter_ns()
         return self._tick_time_ns
 
-    def tock(self, name: str = None) -> int:
+    def tock(self, name: str = None) -> float:
         if not name:
             tock_caller_frame = inspect.stack()[1]
-            name = f"{tock_caller_frame.filename}:{self._tick_frame_info.lineno}-{tock_caller_frame.lineno}"
+            name = (
+                f"{tock_caller_frame.filename}:"
+                f"{self._tick_frame_info.lineno}-"
+                f"{tock_caller_frame.lineno}"
+            )
 
         tock_time_ns = time.perf_counter_ns()
 
         if name in self.aggregate_times:
             self.aggregate_times[name].update(tock_time_ns)
         else:
+            if self._tick_time_ns is None:
+                raise ValueError(f"Clock {self.name} was not ticked.")
             dt = tock_time_ns - self._tick_time_ns
             self.aggregate_times[name] = AggregateTimes(
                 last_time_ns=dt,
@@ -118,7 +124,7 @@ def tick(
     collection: Optional[ClockCollection] = None,
     tick_time_ns: Optional[int] = None,
 ) -> Clock:
-    collection: ClockCollection = collection or _INTIME_CLOCKS
+    collection = collection or _INTIME_CLOCKS
     if not name:
         tick_frame_info: inspect.FrameInfo = inspect.stack()[1]
         if f"{tick_frame_info.filename}:{tick_frame_info.lineno}" in collection.clocks:
