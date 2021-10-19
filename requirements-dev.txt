@@ -8,3 +8,6 @@ mypy
 flake8
 black
 isort
+# deploy
+wheel
+bump2version
