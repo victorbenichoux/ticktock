@@ -1,0 +1,10 @@
+-r requirements.txt
+
+# tests
+pytest
+coverage
+# lint
+mypy
+flake8
+black
+isort
