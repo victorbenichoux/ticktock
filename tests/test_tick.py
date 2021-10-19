@@ -1,6 +1,6 @@
 import pytest
 
-from ticktock.timer import ClockCollection, tick
+from ticktock.timer import Clock, ClockCollection, tick
 
 
 @pytest.fixture(scope="function")
@@ -39,3 +39,9 @@ def test_tick_simple_in_function(fresh_clock_collection):
     assert len(fresh_clock_collection.clocks) == 1
     f2()
     assert len(fresh_clock_collection.clocks) == 2
+
+
+def test_clock_no_tick(fresh_clock_collection):
+    clock = Clock()
+    with pytest.raises(ValueError):
+        clock.tock()
