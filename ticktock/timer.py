@@ -4,6 +4,8 @@ import time
 from dataclasses import dataclass
 from typing import Dict, Optional
 
+from ticktock.utils import format_ns_interval
+
 DEFAULT_PERIOD = 2.0
 
 
@@ -26,9 +28,9 @@ class ClockCollection:
         for clock in self.clocks.values():
             for key, info in clock.aggregate_times.items():
                 print(
-                    f"Clock {clock.name} [{key}]:"
-                    f" avg = {info.avg_time_ns}, "
-                    f"last = {info.last_time_ns}, "
+                    f"{clock.name} [{key}] "
+                    f"avg = {format_ns_interval(info.avg_time_ns)}, "
+                    f"last = {format_ns_interval(info.last_time_ns())}, "
                     f"n = {info.n_periods}"
                 )
 
@@ -47,20 +49,25 @@ class AggregateTimes:
     avg_time_ns: float
     min_time_ns: float
     max_time_ns: float
-    last_time_ns: float
-    last_dt_ns: float
+    last_tick_time_ns: float
+    last_tock_time_ns: float
 
     n_periods: int = 1
 
-    def update(self, tock_time_ns: int) -> None:
-        self.last_dt_ns = tock_time_ns - self.last_time_ns
+    def last_time_ns(self):
+        return self.last_tock_time_ns - self.last_tick_time_ns
+
+    def update(self, tock_time_ns: int, tick_time_ns: int) -> None:
+        self.last_tock_time_ns = tock_time_ns
+        self.last_tick_time_ns = tick_time_ns
+        last_time_ns: float = self.last_time_ns()
+
         self.n_periods += 1
-        self.max_time_ns = max(tock_time_ns, self.max_time_ns or -math.inf)
-        self.min_time_ns = min(tock_time_ns, self.min_time_ns or math.inf)
+        self.max_time_ns = max(last_time_ns, self.max_time_ns or -math.inf)
+        self.min_time_ns = min(last_time_ns, self.min_time_ns or math.inf)
         self.avg_time_ns = (
-            (self.avg_time_ns or 0) * (self.n_periods - 1) + self.last_dt_ns
+            (self.avg_time_ns or 0) * (self.n_periods - 1) + last_time_ns
         ) / self.n_periods
-        self.last_time_ns = tock_time_ns
 
 
 class Clock:
@@ -102,17 +109,17 @@ class Clock:
         tock_time_ns = time.perf_counter_ns()
 
         if name in self.aggregate_times:
-            self.aggregate_times[name].update(tock_time_ns)
+            self.aggregate_times[name].update(tock_time_ns, self._tick_time_ns)
         else:
             if self._tick_time_ns is None:
                 raise ValueError(f"Clock {self.name} was not ticked.")
             dt = tock_time_ns - self._tick_time_ns
             self.aggregate_times[name] = AggregateTimes(
-                last_time_ns=dt,
+                last_tick_time_ns=self._tick_time_ns,
+                last_tock_time_ns=tock_time_ns,
                 avg_time_ns=dt,
                 min_time_ns=dt,
                 max_time_ns=dt,
-                last_dt_ns=dt,
             )
 
         self.collection.update()
