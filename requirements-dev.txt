@@ -11,3 +11,4 @@ isort
 # deploy
 wheel
 bump2version
+twine
