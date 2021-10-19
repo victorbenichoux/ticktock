@@ -4,6 +4,7 @@ from ticktock.config import (
     CURRENT_CONFIGURATION,
     get_default_configuration,
     set_configuration,
+    set_period,
 )
 
 
@@ -24,3 +25,6 @@ def test_set_env_period(fresh_configuration, monkeypatch):
 
     set_configuration({"DEFAULT_PERIOD": 10})
     assert CURRENT_CONFIGURATION["DEFAULT_PERIOD"] == 10
+
+    set_period(3.5)
+    assert CURRENT_CONFIGURATION["DEFAULT_PERIOD"] == 3.5

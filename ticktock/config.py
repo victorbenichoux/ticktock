@@ -28,4 +28,4 @@ def set_configuration(config_dict: Dict):
 def set_period(v: float):
     global CURRENT_CONFIGURATION
 
-    CURRENT_CONFIGURATION = {**CURRENT_CONFIGURATION, "DEFAULT_PERIOD": v}
+    CURRENT_CONFIGURATION.update({"DEFAULT_PERIOD": v})
