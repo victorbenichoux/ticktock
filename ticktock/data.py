@@ -1,9 +1,11 @@
 import math
 from dataclasses import dataclass
+from typing import Dict
 
 
 @dataclass
 class AggregateTimes:
+    tock_name: str
     avg_time_ns: float
     min_time_ns: float
     max_time_ns: float
@@ -34,3 +36,9 @@ class AggregateTimes:
 
         if self.n_periods >= 2:
             self.std_time_ns = math.sqrt(self.m2_time_ns / (self.n_periods - 1))
+
+
+@dataclass
+class ClockData:
+    times: Dict[str, AggregateTimes]
+    tick_name: str

@@ -22,6 +22,43 @@ def test_tick_simple(fresh_clock_collection):
     assert len(clock.aggregate_times) == 2
 
 
+@pytest.mark.parametrize("name_tick", [None, "ok"])
+def test_tick_identity(name_tick, fresh_clock_collection):
+    t_id = None
+    for _ in range(2):
+        t = tick(name=name_tick, collection=fresh_clock_collection)
+        assert len(fresh_clock_collection.clocks) == 1
+        if t_id is not None:
+            assert t_id == id(t)
+        t_id = id(t)
+
+
+@pytest.mark.parametrize(
+    "name_tick, name_tock_1, name_tock_2, num_times",
+    [
+        (None, None, None, 2),
+        ("ok", None, None, 2),
+        ("ok", "boomer", None, 2),
+        ("ok", "boomer", "boomer", 1),
+        ("ok", "boomer", "boomer_2", 2),
+        (None, "ok", None, 2),
+        (None, "ok", "boomer", 2),
+        (None, "ok", "ok", 1),
+        ("ok", None, "boomer", 2),
+    ],
+)
+def test_tick_name(
+    name_tick, name_tock_1, name_tock_2, num_times, fresh_clock_collection
+):
+    t = tick(name=name_tick, collection=fresh_clock_collection)
+    t.tock(name_tock_1)
+    t.tock(name_tock_2)
+
+    assert len(fresh_clock_collection.clocks) == 1
+    clock = next(iter(fresh_clock_collection.clocks.values()))
+    assert len(clock.aggregate_times) == num_times
+
+
 def test_tick_simple_in_function(fresh_clock_collection):
     def f():
         t = tick(collection=fresh_clock_collection)

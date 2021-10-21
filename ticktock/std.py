@@ -2,7 +2,7 @@ from string import Formatter
 from typing import Callable, Dict, Iterable, List, Optional
 
 from ticktock.config import CURRENT_CONFIGURATION
-from ticktock.data import AggregateTimes
+from ticktock.data import ClockData
 from ticktock.utils import format_ns_interval
 
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
@@ -29,21 +29,20 @@ class StandardRenderer:
                 self._fields.append(field_name)
         self._has_printed = 0
 
-    def render(self, render_data: Dict[str, Dict[str, AggregateTimes]]) -> None:
+    def render(self, render_data: List[ClockData]) -> None:
         ls: List[str] = []
-        for clock_name, clock_data in render_data.items():
-            for line in self.render_times(clock_name, clock_data):
+        for clock_data in render_data:
+            for line in self.render_times(clock_data):
                 ls.append(line)
         print(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
         self._has_printed = len(ls)
 
-    def render_times(
-        self, clock_name: str, clock_data: Dict[str, AggregateTimes]
-    ) -> Iterable[str]:
-        for tick_key, times in clock_data.items():
+    def render_times(self, clock_data: ClockData) -> Iterable[str]:
+        for times in clock_data.times.values():
             yield (
                 CLR
-                + f"⏱️ {clock_name} [{tick_key}] "
+                + "⏱️ "
+                + f"[{clock_data.tick_name}-{times.tock_name}] "
                 + self._format.format(
                     **{key: FIELDS[key](times) for key in self._fields}
                 )
