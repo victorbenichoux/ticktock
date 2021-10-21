@@ -1,5 +1,6 @@
 import inspect
 import time
+from contextlib import contextmanager
 from typing import Dict, Optional
 
 from ticktock.config import CURRENT_CONFIGURATION
@@ -115,3 +116,14 @@ def tick(
     )
     clock.tick()
     return clock
+
+
+@contextmanager
+def ticktock(
+    name: str = None,
+    collection: Optional[ClockCollection] = None,
+    tick_time_ns: Optional[int] = None,
+):
+    t = tick(name=name, collection=collection, tick_time_ns=tick_time_ns)
+    yield
+    t.tock()

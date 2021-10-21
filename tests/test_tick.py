@@ -1,6 +1,6 @@
 import pytest
 
-from ticktock.timer import Clock, ClockCollection, tick
+from ticktock.timer import Clock, ClockCollection, tick, ticktock
 
 
 @pytest.fixture(scope="function")
@@ -45,3 +45,9 @@ def test_clock_no_tick(fresh_clock_collection):
     clock = Clock()
     with pytest.raises(ValueError):
         clock.tock()
+
+
+def test_contextmanager(fresh_clock_collection):
+    with ticktock(collection=fresh_clock_collection):
+        pass
+    assert len(fresh_clock_collection.clocks) == 1
