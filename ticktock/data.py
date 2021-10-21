@@ -9,28 +9,27 @@ class AggregateTimes:
     max_time_ns: float
     last_tick_time_ns: float
     last_tock_time_ns: float
+    last_time_ns: float = 0
     total_time_ns: float = 0
     std_time_ns: float = 0
     m2_time_ns: float = 0
 
     n_periods: int = 1
 
-    def last_time_ns(self):
-        return self.last_tock_time_ns - self.last_tick_time_ns
-
     def update(self, tock_time_ns: int, tick_time_ns: int) -> None:
         self.last_tock_time_ns = tock_time_ns
         self.last_tick_time_ns = tick_time_ns
-        last_time_ns: float = self.last_time_ns()
+
+        self.last_time_ns = tock_time_ns - tick_time_ns
 
         self.n_periods += 1
-        self.max_time_ns = max(last_time_ns, self.max_time_ns or -math.inf)
-        self.min_time_ns = min(last_time_ns, self.min_time_ns or math.inf)
+        self.max_time_ns = max(self.last_time_ns, self.max_time_ns or -math.inf)
+        self.min_time_ns = min(self.last_time_ns, self.min_time_ns or math.inf)
 
-        delta = last_time_ns - self.avg_time_ns
+        delta = self.last_time_ns - self.avg_time_ns
         self.avg_time_ns += delta / self.n_periods
 
-        delta2 = last_time_ns - self.avg_time_ns
+        delta2 = self.last_time_ns - self.avg_time_ns
         self.m2_time_ns += delta * delta2
 
         if self.n_periods >= 2:
