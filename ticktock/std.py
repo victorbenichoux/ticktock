@@ -14,7 +14,7 @@ FIELDS = {
     "min": lambda times: format_ns_interval(times.min_time_ns),
     "max": lambda times: format_ns_interval(times.max_time_ns),
     "last": lambda times: format_ns_interval(times.last_time_ns),
-    "count": lambda times: format_ns_interval(times.n_periods),
+    "count": lambda times: times.n_periods,
 }
 
 
