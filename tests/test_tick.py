@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from ticktock.timer import Clock, ClockCollection, tick, ticktock
@@ -50,4 +52,14 @@ def test_clock_no_tick(fresh_clock_collection):
 def test_contextmanager(fresh_clock_collection):
     with ticktock(collection=fresh_clock_collection):
         pass
+    assert len(fresh_clock_collection.clocks) == 1
+
+
+def test_decorator(fresh_clock_collection):
+    @ticktock(collection=fresh_clock_collection)
+    def f(x):
+        time.sleep(x)
+
+    f(0.1)
+    f(0.1)
     assert len(fresh_clock_collection.clocks) == 1

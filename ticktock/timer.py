@@ -136,3 +136,16 @@ class ticktock:
 
     def __exit__(self, *_):
         self.t.tock()
+
+    def __call__(self, func):
+        def wrapper(*args, **kwargs):
+            t = tick(
+                name=self.name,
+                collection=self.collection,
+                tick_time_ns=self.tick_time_ns,
+            )
+            retval = func(*args, **kwargs)
+            t.tock()
+            return retval
+
+        return wrapper
