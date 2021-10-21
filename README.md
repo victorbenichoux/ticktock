@@ -61,3 +61,24 @@ for k in range(1000):
     else:
         t.tock()
 ```
+
+It is also possible to use `ticktock` as a context manager to track the timing of a chunk of code:
+
+```python
+from ticktock import ticktock
+
+with ticktock():
+    time.sleep(1)
+```
+
+Or a decorator, to track the timing of each call to a function:
+
+```python
+from ticktock import ticktock
+
+@ticktock
+def f():
+    time.sleep(1)
+
+f()
+```
