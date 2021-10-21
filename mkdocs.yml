@@ -1,0 +1,27 @@
+# Project information
+site_name: 'ticktock documentation'
+site_description: 'Simple Python code metering library'
+
+nav:
+  - Home: 'index.md'
+theme:
+  name: 'material'
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details
+  - meta
+  - admonition
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  # - git-revision-date-localized
+
+repo_name: 'victorbenichoux/ticktock'
+repo_url: 'https://github.com/victorbenichoux/ticktock'
+extra:
+  repo_icon: 'github'
+
