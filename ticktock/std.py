@@ -1,21 +1,29 @@
-from typing import Dict
+from typing import Callable, Dict
 
 from ticktock.data import AggregateTimes
 from ticktock.utils import format_ns_interval
 
+UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
+CLR = "\x1B[0K"
+
 
 class StandardRenderer:
+    def __init__(self) -> None:
+        self._has_printed = 0
+
     def render(self, render_data: Dict[str, Dict[str, AggregateTimes]]):
         ls = []
         for clock_name, clock_data in render_data.items():
             for line in StandardRenderer.render_clock(clock_name, clock_data):
                 ls.append(line)
-        print("\n".join(ls))
+        print(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+        self._has_printed = len(ls)
 
-    def render_clock(clock_name, clock_data: Dict[str, AggregateTimes]):
+    @staticmethod
+    def render_clock(clock_name: str, clock_data: Dict[str, AggregateTimes]):
         for tick_key, times in clock_data.items():
             yield (
-                f"⏱️ {clock_name} [{tick_key}] "
+                CLR + f"⏱️ {clock_name} [{tick_key}] "
                 f"avg = {format_ns_interval(times.avg_time_ns)}, "
                 f"last = {format_ns_interval(times.last_time_ns())}, "
                 f"n = {times.n_periods}"
