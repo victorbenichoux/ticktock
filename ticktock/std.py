@@ -24,7 +24,10 @@ class StandardRenderer:
         for tick_key, times in clock_data.items():
             yield (
                 CLR + f"⏱️ {clock_name} [{tick_key}] "
-                f"avg = {format_ns_interval(times.avg_time_ns)}, "
+                f"{format_ns_interval(times.avg_time_ns)} "
+                f"({format_ns_interval(times.std_time_ns)} std), "
+                f"min = {format_ns_interval(times.min_time_ns)}, "
+                f"max = {format_ns_interval(times.max_time_ns)}, "
                 f"last = {format_ns_interval(times.last_time_ns())}, "
-                f"n = {times.n_periods}"
+                f"count = {times.n_periods}"
             )
