@@ -1,0 +1,21 @@
+name: lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: python3.9 -m pip install -r requirements-dev.txt
+      - name: Install mypy types
+        run: mypy --install-types --non-interactive -p ticktock
+      - name: Run lint
+        run: scripts/lint.sh

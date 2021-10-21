@@ -1,6 +1,7 @@
 -r requirements.txt
 
 # tests
+nox
 pytest
 coverage
 # lint

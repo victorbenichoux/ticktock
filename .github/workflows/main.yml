@@ -1,0 +1,52 @@
+name: CI
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+    name: ${{ fromJson('{"macos-latest":"macOS","windows-latest":"Windows","ubuntu-latest":"Ubuntu"}')[matrix.os] }} ${{ matrix.python-version }} ${{ matrix.nox-session}}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set Up Python - ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: python -m pip install --upgrade nox
+
+      - name: Run Tests
+        run: scripts/ci_tests.sh
+        env:
+          OS_NAME: "${{ matrix.os }}"
+          PYTHON_VERSION: "${{ matrix.python-version }}"
+
+      - name: Add & Commit Badges
+        if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7' && github.ref == 'refs/heads/main'}}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add docs/badges
+          git diff-index --quiet HEAD || git commit -m "generate badges"
+          git push
+
+      - name: 'Upload coverage report'
+        if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7' && github.ref == 'refs/heads/main'}}
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: docs/coverage
+          retention-days: 1
