@@ -1,8 +1,6 @@
 import copy
 import os
-from typing import Dict, TypeVar
-
-T = TypeVar("T")
+from typing import Dict
 
 
 def value_from_env(env_var: str, default):
