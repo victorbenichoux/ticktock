@@ -39,7 +39,10 @@ class Clock:
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
         tick_frame_info: Optional[inspect.FrameInfo] = None,
+        timer: Optional[Callable[[], int]] = None,
     ) -> None:
+        self.timer = timer or time.perf_counter_ns
+
         self.collection: ClockCollection = collection or _TICKTOCK_CLOCKS
 
         tick_frame_info = tick_frame_info or inspect.stack()[1]
@@ -55,7 +58,7 @@ class Clock:
         self._tick_time_ns: Optional[int] = tick_time_ns
 
     def tick(self) -> float:
-        self._tick_time_ns = time.perf_counter_ns()
+        self._tick_time_ns = self.timer()
         return self._tick_time_ns
 
     def tock(
@@ -68,7 +71,7 @@ class Clock:
         tock_id = name or f"{_tock_frame_info.filename}:{_tock_frame_info.lineno}"
         tock_name = name or str(_tock_frame_info.lineno)
 
-        tock_time_ns = time.perf_counter_ns()
+        tock_time_ns = self.timer()
 
         if self._tick_time_ns is None:
             raise ValueError(f"Clock {self.tick_name} was not ticked.")
@@ -94,6 +97,7 @@ def tick(
     name: str = None,
     collection: Optional[ClockCollection] = None,
     tick_time_ns: Optional[int] = None,
+    timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
     collection = collection or _TICKTOCK_CLOCKS
     tick_frame_info: inspect.FrameInfo = inspect.stack()[1]
@@ -109,6 +113,7 @@ def tick(
             collection=collection,
             tick_time_ns=tick_time_ns,
             tick_frame_info=tick_frame_info,
+            timer=timer,
         )
     clock.tick()
     return clock
@@ -120,8 +125,10 @@ class ticktock:
         name: str = None,
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
+        timer: Optional[Callable[[], int]] = None,
     ) -> None:
         self._func: Optional[Callable] = None
+        self.timer = timer
         if callable(name):
             self._func = name
         else:
@@ -132,7 +139,10 @@ class ticktock:
 
     def __enter__(self):
         self.t = tick(
-            name=self.name, collection=self.collection, tick_time_ns=self.tick_time_ns
+            name=self.name,
+            collection=self.collection,
+            tick_time_ns=self.tick_time_ns,
+            timer=self.timer,
         )
 
     def __exit__(self, *_):
@@ -147,6 +157,7 @@ class ticktock:
                 t = tick(
                     name=f"{func.__name__}:{func_first_lineno}",
                     collection=self.collection,
+                    timer=self.timer,
                 )
                 retval = func(*args, **kwargs)
                 t.tock(name=func_n_lines + func_first_lineno)
