@@ -2,12 +2,7 @@ import time
 
 import pytest
 
-from ticktock.timer import Clock, ClockCollection, tick, ticktock
-
-
-@pytest.fixture(scope="function")
-def fresh_clock_collection():
-    return ClockCollection()
+from ticktock.timer import Clock, tick, ticktock
 
 
 def test_tick_simple(fresh_clock_collection):

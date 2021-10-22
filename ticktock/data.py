@@ -11,7 +11,7 @@ class AggregateTimes:
     max_time_ns: float
     last_tick_time_ns: float
     last_tock_time_ns: float
-    last_time_ns: float = 0
+    last_time_ns: float
     total_time_ns: float = 0
     std_time_ns: float = 0
     m2_time_ns: float = 0
