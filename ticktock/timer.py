@@ -42,11 +42,11 @@ class Clock:
     ) -> None:
         self.collection: ClockCollection = collection or _TICKTOCK_CLOCKS
 
-        self.tick_name: Optional[str] = name
         tick_frame_info = tick_frame_info or inspect.stack()[1]
+        self._tick_frame_info: inspect.FrameInfo = tick_frame_info
 
         self._tick_id = name or f"{tick_frame_info.filename}:{tick_frame_info.lineno}"
-        self._tick_frame_info: inspect.FrameInfo = tick_frame_info
+        self.tick_name: str = name or os.path.basename(self._tick_id)
 
         self.aggregate_times: Dict[str, AggregateTimes] = {}
 
