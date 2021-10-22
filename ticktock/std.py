@@ -1,5 +1,5 @@
 from string import Formatter
-from typing import Callable, Dict, Iterable, List, Optional
+from typing import Callable, Iterable, List, Optional
 
 from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.data import ClockData

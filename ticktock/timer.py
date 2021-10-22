@@ -1,7 +1,7 @@
 import inspect
 import os
 import time
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
 from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.data import AggregateTimes, ClockData
@@ -58,10 +58,15 @@ class Clock:
         self._tick_time_ns = time.perf_counter_ns()
         return self._tick_time_ns
 
-    def tock(self, name: Optional[str] = None) -> float:
-        tock_caller_frame = inspect.stack()[1]
-        tock_id = name or f"{tock_caller_frame.filename}:{tock_caller_frame.lineno}"
-        tock_name = name or str(tock_caller_frame.lineno)
+    def tock(
+        self,
+        name: Optional[str] = None,
+        tock_frame_info: Optional[inspect.FrameInfo] = None,
+    ) -> float:
+        _tock_frame_info: inspect.FrameInfo = tock_frame_info or inspect.stack()[1]
+
+        tock_id = name or f"{_tock_frame_info.filename}:{_tock_frame_info.lineno}"
+        tock_name = name or str(_tock_frame_info.lineno)
 
         tock_time_ns = time.perf_counter_ns()
 
@@ -116,10 +121,14 @@ class ticktock:
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
     ) -> None:
+        self._func: Optional[Callable] = None
+        if callable(name):
+            self._func = name
+        else:
+            self.name = name
+            self.tick_time_ns = tick_time_ns
+            self.t = None
         self.collection = collection
-        self.name = name
-        self.tick_time_ns = tick_time_ns
-        self.t = None
 
     def __enter__(self):
         self.t = tick(
@@ -129,15 +138,23 @@ class ticktock:
     def __exit__(self, *_):
         self.t.tock()
 
-    def __call__(self, func):
-        def wrapper(*args, **kwargs):
-            t = tick(
-                name=self.name,
-                collection=self.collection,
-                tick_time_ns=self.tick_time_ns,
-            )
-            retval = func(*args, **kwargs)
-            t.tock()
-            return retval
+    def __call__(self, *args, **kwargs):
+        def _decorate(func):
+            func_n_lines = len(inspect.getsource(func).split("\n")) - 2
+            func_first_lineno = func.__code__.co_firstlineno
 
-        return wrapper
+            def wrapper(*args, **kwargs):
+                t = tick(
+                    name=f"{func.__name__}:{func_first_lineno}",
+                    collection=self.collection,
+                )
+                retval = func(*args, **kwargs)
+                t.tock(name=func_n_lines + func_first_lineno)
+                return retval
+
+            return wrapper
+
+        if self._func:
+            return _decorate(self._func)(*args, **kwargs)
+        else:
+            return _decorate(args[0])
