@@ -49,7 +49,13 @@ class Clock:
         self._tick_frame_info: inspect.FrameInfo = tick_frame_info
 
         self._tick_id = name or f"{tick_frame_info.filename}:{tick_frame_info.lineno}"
-        self.tick_name: str = name or os.path.basename(self._tick_id)
+        if not name:
+            if os.path.exists(tick_frame_info.filename):
+                self.tick_name = os.path.basename(self._tick_id)
+            else:
+                self.tick_name = f"{tick_frame_info.lineno}"
+        else:
+            self.tick_name = name
 
         self.aggregate_times: Dict[str, AggregateTimes] = {}
 
