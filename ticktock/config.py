@@ -13,8 +13,7 @@ def get_default_configuration():
     return {
         "DEFAULT_PERIOD": value_from_env("TICKTOCK_DEFAULT_PERIOD", 2.0),
         "DEFAULT_FORMAT": value_from_env(
-            "TICKTOCK_DEFAULT_FORMAT",
-            "{mean} ({std} std) min={min} max={max} count={count} last={last}",
+            "TICKTOCK_DEFAULT_FORMAT", "{mean} count={count}"
         ),
     }
 
@@ -35,7 +34,14 @@ def set_period(v: float):
     CURRENT_CONFIGURATION.update({"DEFAULT_PERIOD": v})
 
 
+FORMATS = {
+    "short": "{mean} count={count}",
+    "long": "{mean} ({std} std) min={min} max={max} count={count} last={last}",
+}
+
+
 def set_format(v: str):
     global CURRENT_CONFIGURATION
-
+    if v in FORMATS:
+        v = FORMATS[v]
     CURRENT_CONFIGURATION.update({"DEFAULT_FORMAT": v})
