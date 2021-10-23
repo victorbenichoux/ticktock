@@ -42,7 +42,7 @@ def test_timing_constant(fresh_clock_collection, constant_timer):
     assert first_timer.min_time_ns == 0
     assert first_timer.max_time_ns == 0
     assert first_timer.last_time_ns == 0
-    assert first_timer.gin_periods == 10
+    assert first_timer.n_periods == 10
 
     assert second_timer.avg_time_ns == 0
     assert second_timer.std_time_ns == 0
