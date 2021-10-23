@@ -15,50 +15,72 @@
 </p>
 
 ---
-`ticktock` is a minimalist library to view Python time performance of Python code.
+
+`ticktock` is a minimalist library to profile Python code, it displays timing of code snippets periodically.
+
+# Quickstart
+
 
 First, install `ticktock`:
 ```
 pip install py-ticktock
 ```
 
-Then, anywhere in your code you can use `tick` to start a clock, and `tock` to register the end of the snippet you want to time:
+Anywhere in your code you can use `tick` to start a clock, and `tock` to register the end of the snippet you want to time:
 
 ```python
-t = tick()
+from ticktock import tick
+
+clock = tick()
 # do some work
-t.tock()
+clock.tock()
 ```
 
-Even if the code is called many times within a loop, measured times will only periodially (2 seconds by default):
+This will print
+```
+⏱️ [3-5] 1ms count=1
+```
+Indicating that lines 3-5 take <1ms to run.
+
+
+If the timed snippet is called multiple times (for example within a loop), measured times will be aggregated and printed periodically (every 2 seconds by default).
+
+As a result, the following code:
 
 ```python
-import time
 from ticktock import tick
 
 for _ in range(1000):
-    t = tick()
+    clock = tick()
     # do some work
-    time.sleep(1)
-    t.tock()
+    clock.tock()
 ```
+
+Will output:
+```
+⏱️ [4-6] 1ms count=1000
+```
+
+# Advanced usage
+
+## Multiple Clocks
 
 You can create multiple independent ticks, which will appear as two separate clocks:
 
 ```python
 for _ in range(1000):
-    t = tick()
+    clock = tick()
     # do some work
     time.sleep(1)
-    t.tock()
+    clock.tock()
 
-    t = tick()
+    clock = tick()
     # do some other work
     time.sleep(0.5)
-    t.tock()
+    clock.tock()
 ```
 
-Ticks can share a common starting point:
+A single clock can have a multiple `tocks`, which will be displayed as different lines
 
 ```python
 for k in range(1000):
@@ -72,6 +94,8 @@ for k in range(1000):
         t.tock()
 ```
 
+## Context manager
+
 It is also possible to use `ticktock` as a context manager to track the timing of a chunk of code:
 
 ```python
@@ -81,7 +105,9 @@ with ticktock():
     time.sleep(1)
 ```
 
-Or a decorator, to track the timing of each call to a function:
+## Function decorator
+
+Use the `ticktock` decorator to track the timing of each call to a function:
 
 ```python
 from ticktock import ticktock
