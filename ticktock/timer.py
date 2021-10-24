@@ -5,15 +5,15 @@ from typing import Callable, Dict, Optional
 
 from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.data import AggregateTimes, ClockData
-from ticktock.std import StandardRenderer
+from ticktock.renderers import AbstractRenderer, StandardRenderer
 
 
 class ClockCollection:
-    def __init__(self, period: Optional[float] = None) -> None:
+    def __init__(self, period: Optional[float] = None, renderer: Optional[AbstractRenderer]= None) -> None:
         self.clocks: Dict[str, Clock] = {}
         self._last_refresh_time_s: Optional[float] = None
         self._period: float = period or CURRENT_CONFIGURATION["DEFAULT_PERIOD"]
-        self.renderer = StandardRenderer()
+        self.renderer = renderer or StandardRenderer()
 
     def update(self):
         if (

@@ -1,6 +1,9 @@
 from string import Formatter
 from typing import Callable, Iterable, List, Optional
 
+import abc
+import logging
+
 from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.data import ClockData
 from ticktock.utils import format_ns_interval
@@ -18,7 +21,12 @@ FIELDS = {
 }
 
 
-class StandardRenderer:
+class AbstractRenderer(abc.ABC):
+    def render(self, render_data: List[ClockData]) -> None:
+        ...
+
+
+class StandardRenderer(AbstractRenderer):
     def __init__(self, format: Optional[str] = None) -> None:
         self._format: str = format or CURRENT_CONFIGURATION.get("DEFAULT_FORMAT")
         self._fields: List[str] = []
@@ -47,3 +55,37 @@ class StandardRenderer:
                     **{key: FIELDS[key](times) for key in self._fields}
                 )
             )
+
+
+class LoggingRenderer(AbstractRenderer):
+    def __init__(self, logger=None, extra_as_kwargs: bool = False) -> None:
+        self.logger = logger or logging.getLogger("ticktock")
+        self._log_function = {
+            "DEBUG": self.logger.debug,
+            "INFO": self.logger.info,
+            "WARNING": self.logger.warning,
+            "ERROR": self.logger.error,
+            "CRITICAL": self.logger.critical,
+        }
+        if extra_as_kwargs:
+            def do_log(msg, **kwargs):
+                self._log_function(msg, **kwargs)
+        else:
+            def do_log(msg, **kwargs):
+                self._log_function(msg, extra=kwargs)
+
+        self._log = do_log
+
+    def render(self, render_data: List[ClockData]) -> None:
+        for clock_data in render_data:
+            for times in clock_data.times.values():
+                self._log(
+                    "clock",
+                    tick_name=clock_data.tick_name,
+                    tock_name=clock_data.tick_name,
+                    mean=times.avg_time_ns * 1e9,
+                    std=times.std_time_ns * 1e9,
+                    min=times.min_time_ns * 1e9,
+                    max=times.max_time_ns * 1e9,
+                    count=times.n_periods,
+                )
