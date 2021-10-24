@@ -1,12 +1,10 @@
+import abc
+import logging
 from string import Formatter
 from typing import Callable, Iterable, List, Optional
 
-import abc
-import logging
-
-from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.data import ClockData
-from ticktock.utils import format_ns_interval
+from ticktock.utils import format_ns_interval, value_from_env
 
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
 CLR = "\x1B[0K"
@@ -26,9 +24,18 @@ class AbstractRenderer(abc.ABC):
         ...
 
 
+FORMATS = {
+    "short": "{mean} count={count}",
+    "long": "{mean} ({std} std) min={min} max={max} count={count} last={last}",
+}
+
+
 class StandardRenderer(AbstractRenderer):
     def __init__(self, format: Optional[str] = None) -> None:
-        self._format: str = format or CURRENT_CONFIGURATION.get("DEFAULT_FORMAT")
+        self._format: str = format or value_from_env("TICKTOCK_DEFAULT_FORMAT", "short")
+        if self._format in FORMATS:
+            self._format = FORMATS[self._format]
+
         self._fields: List[str] = []
         for (_, field_name, _, _) in Formatter().parse(self._format):
             if field_name is not None:
@@ -68,13 +75,16 @@ class LoggingRenderer(AbstractRenderer):
             "CRITICAL": self.logger.critical,
         }
         if extra_as_kwargs:
-            def do_log(msg, **kwargs):
+
+            def _log(msg, **kwargs):
                 self._log_function(msg, **kwargs)
+
         else:
-            def do_log(msg, **kwargs):
+
+            def _log(msg, **kwargs):
                 self._log_function(msg, extra=kwargs)
 
-        self._log = do_log
+        self._log = _log
 
     def render(self, render_data: List[ClockData]) -> None:
         for clock_data in render_data:

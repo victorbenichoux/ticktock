@@ -1,30 +1,26 @@
-import pytest
-
-from ticktock.config import (
-    CURRENT_CONFIGURATION,
-    get_default_configuration,
-    set_configuration,
-    set_period,
-)
+from ticktock import timer
+from ticktock.renderers import FORMATS, StandardRenderer
+from ticktock.timer import ClockCollection, set_collection, tick
 
 
-@pytest.fixture(scope="session")
-def fresh_configuration():
-    set_configuration(get_default_configuration())
-    yield
-    set_configuration(get_default_configuration())
-
-
-def test_set_env_period(fresh_configuration, monkeypatch):
-    conf = get_default_configuration()
-    assert conf["DEFAULT_PERIOD"] == 2
+def test_env_set_period(fresh_configuration, monkeypatch):
+    collection = ClockCollection()
+    assert collection._period == 2
 
     monkeypatch.setenv("TICKTOCK_DEFAULT_PERIOD", "1")
-    conf = get_default_configuration()
-    assert conf["DEFAULT_PERIOD"] == 1
+    collection = ClockCollection()
+    assert collection._period == 1
 
-    set_configuration({"DEFAULT_PERIOD": 10})
-    assert CURRENT_CONFIGURATION["DEFAULT_PERIOD"] == 10
+    set_collection(collection)
+    assert timer._DEFAULT_COLLECTION._period == 1
 
-    set_period(3.5)
-    assert CURRENT_CONFIGURATION["DEFAULT_PERIOD"] == 3.5
+    clock = tick()
+    assert clock.collection._period == 1
+
+
+def test_env_set_renderer_format(fresh_configuration, monkeypatch):
+    renderer = StandardRenderer()
+    assert renderer._format == FORMATS["short"]
+
+    renderer = StandardRenderer(format="long")
+    assert renderer._format == FORMATS["long"]

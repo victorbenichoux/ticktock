@@ -3,16 +3,20 @@ import os
 import time
 from typing import Callable, Dict, Optional
 
-from ticktock.config import CURRENT_CONFIGURATION
 from ticktock.data import AggregateTimes, ClockData
 from ticktock.renderers import AbstractRenderer, StandardRenderer
+from ticktock.utils import value_from_env
 
 
 class ClockCollection:
-    def __init__(self, period: Optional[float] = None, renderer: Optional[AbstractRenderer]= None) -> None:
+    def __init__(
+        self,
+        period: Optional[float] = None,
+        renderer: Optional[AbstractRenderer] = None,
+    ) -> None:
         self.clocks: Dict[str, Clock] = {}
         self._last_refresh_time_s: Optional[float] = None
-        self._period: float = period or CURRENT_CONFIGURATION["DEFAULT_PERIOD"]
+        self._period: float = period or value_from_env("TICKTOCK_DEFAULT_PERIOD", 2.0)
         self.renderer = renderer or StandardRenderer()
 
     def update(self):
@@ -29,7 +33,12 @@ class ClockCollection:
             self._last_refresh_time_s = time.perf_counter()
 
 
-_TICKTOCK_CLOCKS = ClockCollection()
+_DEFAULT_COLLECTION = ClockCollection()
+
+
+def set_collection(collection: ClockCollection):
+    global _DEFAULT_COLLECTION
+    _DEFAULT_COLLECTION = collection
 
 
 class Clock:
@@ -43,7 +52,7 @@ class Clock:
     ) -> None:
         self.timer = timer or time.perf_counter_ns
 
-        self.collection: ClockCollection = collection or _TICKTOCK_CLOCKS
+        self.collection: ClockCollection = collection or _DEFAULT_COLLECTION
 
         tick_frame_info = tick_frame_info or inspect.stack()[1]
         self._tick_frame_info: inspect.FrameInfo = tick_frame_info
@@ -106,7 +115,7 @@ def tick(
     tick_time_ns: Optional[int] = None,
     timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
-    collection = collection or _TICKTOCK_CLOCKS
+    collection = collection or _DEFAULT_COLLECTION
     tick_frame_info: inspect.FrameInfo = inspect.stack()[1]
     if name and name in collection.clocks:
         clock = collection.clocks[name]
