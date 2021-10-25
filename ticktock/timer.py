@@ -1,11 +1,21 @@
 import inspect
 import os
 import time
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Optional, Tuple
 
 from ticktock.data import AggregateTimes, ClockData
 from ticktock.renderers import AbstractRenderer, StandardRenderer
 from ticktock.utils import value_from_env
+
+
+def get_frame_info(level=1):
+    frame = inspect.currentframe()
+    for _ in range(level + 1):
+        frame = frame.f_back
+    return (
+        frame.f_code.co_filename,
+        frame.f_lineno,
+    )
 
 
 class ClockCollection:
@@ -47,22 +57,20 @@ class Clock:
         name: Optional[str] = None,
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
-        tick_frame_info: Optional[inspect.FrameInfo] = None,
+        tick_frame_info: Optional[Tuple[str, int]] = None,
         timer: Optional[Callable[[], int]] = None,
     ) -> None:
         self.timer = timer or time.perf_counter_ns
 
         self.collection: ClockCollection = collection or _DEFAULT_COLLECTION
 
-        tick_frame_info = tick_frame_info or inspect.stack()[1]
-        self._tick_frame_info: inspect.FrameInfo = tick_frame_info
-
-        self._tick_id = name or f"{tick_frame_info.filename}:{tick_frame_info.lineno}"
+        filename, lineno = tick_frame_info or get_frame_info(1)
+        self._tick_id = name or f"{filename}:{lineno}"
         if not name:
-            if os.path.exists(tick_frame_info.filename):
+            if os.path.exists(filename):
                 self.tick_name = os.path.basename(self._tick_id)
             else:
-                self.tick_name = f"{tick_frame_info.lineno}"
+                self.tick_name = f"{lineno}"
         else:
             self.tick_name = name
 
@@ -79,12 +87,11 @@ class Clock:
     def tock(
         self,
         name: Optional[str] = None,
-        tock_frame_info: Optional[inspect.FrameInfo] = None,
+        tock_frame_info: Optional[Tuple[str, int]] = None,
     ) -> float:
-        _tock_frame_info: inspect.FrameInfo = tock_frame_info or inspect.stack()[1]
-
-        tock_id = name or f"{_tock_frame_info.filename}:{_tock_frame_info.lineno}"
-        tock_name = name or str(_tock_frame_info.lineno)
+        filename, lineno = tock_frame_info or get_frame_info(1)
+        tock_id = name or f"{filename}:{lineno}"
+        tock_name = name or str(lineno)
 
         tock_time_ns = self.timer()
 
@@ -116,13 +123,12 @@ def tick(
     timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
     collection = collection or _DEFAULT_COLLECTION
-    tick_frame_info: inspect.FrameInfo = inspect.stack()[1]
+    tick_frame_info = get_frame_info(1)
+    filename, lineno = tick_frame_info
     if name and name in collection.clocks:
         clock = collection.clocks[name]
-    elif f"{tick_frame_info.filename}:{tick_frame_info.lineno}" in collection.clocks:
-        clock = collection.clocks[
-            f"{tick_frame_info.filename}:{tick_frame_info.lineno}"
-        ]
+    elif f"{filename}:{lineno}" in collection.clocks:
+        clock = collection.clocks[f"{filename}:{lineno}"]
     else:
         clock = Clock(
             name=name,
