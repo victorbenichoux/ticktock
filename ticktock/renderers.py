@@ -1,7 +1,8 @@
 import abc
 import logging
+import sys
 from string import Formatter
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, Iterable, List, Optional, TextIO
 
 from ticktock.data import ClockData
 from ticktock.utils import format_ns_interval, value_from_env
@@ -31,11 +32,11 @@ FORMATS = {
 
 
 class StandardRenderer(AbstractRenderer):
-    def __init__(self, format: Optional[str] = None) -> None:
+    def __init__(self, format: Optional[str] = None, out: TextIO = sys.stderr) -> None:
         self._format: str = format or value_from_env("TICKTOCK_DEFAULT_FORMAT", "short")
         if self._format in FORMATS:
             self._format = FORMATS[self._format]
-
+        self._out = out
         self._fields: List[str] = []
         for (_, field_name, _, _) in Formatter().parse(self._format):
             if field_name is not None:
@@ -49,7 +50,8 @@ class StandardRenderer(AbstractRenderer):
         for clock_data in render_data:
             for line in self.render_times(clock_data):
                 ls.append(line)
-        print(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+        self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+        self._out.flush()
         self._has_printed = len(ls)
 
     def render_times(self, clock_data: ClockData) -> Iterable[str]:
