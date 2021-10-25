@@ -1,6 +1,8 @@
+import atexit
 import inspect
 import os
 import time
+import weakref
 from typing import Callable, Dict, Optional, Tuple
 
 from ticktock.data import AggregateTimes, ClockData
@@ -18,6 +20,9 @@ def get_frame_info(level=1):
     )
 
 
+_ALL_COLLECTIONS = []
+
+
 class ClockCollection:
     def __init__(
         self,
@@ -28,9 +33,10 @@ class ClockCollection:
         self._last_refresh_time_s: Optional[float] = None
         self._period: float = period or value_from_env("TICKTOCK_DEFAULT_PERIOD", 2.0)
         self.renderer = renderer or StandardRenderer()
+        _ALL_COLLECTIONS.append(weakref.ref(self))
 
-    def update(self):
-        if (
+    def update(self, force: bool = False):
+        if force or (
             self._last_refresh_time_s is None
             or time.perf_counter() - self._last_refresh_time_s > self._period
         ):
@@ -191,3 +197,14 @@ class ticktock:
             return _decorate(self._func)(*args, **kwargs)
         else:
             return _decorate(args[0])
+
+
+@atexit.register
+def final_update():
+    for collection_ref in _ALL_COLLECTIONS:
+        collection = collection_ref()
+        if collection is not None:
+            try:
+                collection.update(force=True)
+            except:  # noqa: E722
+                pass
