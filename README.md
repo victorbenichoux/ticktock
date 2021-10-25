@@ -6,8 +6,8 @@
 
 <p align="center">
   <a href="https://github.com/victorbenichoux/ticktock/actions?query=branch%3Amain+"><img src="https://img.shields.io/github/workflow/status/victorbenichoux/ticktock/CI/main" /></a>
-  <a href="https://github.com/victorbenichoux/ticktock/actions/workflows/main.yml?query=branch%3Amain+"><img src="badges/tests.svg" /></a>
-  <a href="https://victorbenichoux.github.io/ticktock/coverage/index.html"><img src="badges/coverage.svg" /></a>
+  <a href="https://github.com/victorbenichoux/ticktock/actions/workflows/main.yml?query=branch%3Amain+"><img src="docs/badges/tests.svg" /></a>
+  <a href="https://victorbenichoux.github.io/ticktock/coverage/index.html"><img src="docs/badges/coverage.svg" /></a>
   <a href="https://pypi.org/project/py-ticktock/"><img src="https://img.shields.io/pypi/v/py-ticktock" /></a>
   <a href="https://pypi.org/project/py-ticktock/"><img src="https://img.shields.io/pypi/pyversions/py-ticktock" /></a>
   <a href="https://victorbenichoux.github.io/ticktock/index.html"><img src="https://img.shields.io/badge/docs-latest-blue" /></a>
