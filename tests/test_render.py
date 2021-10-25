@@ -1,10 +1,13 @@
 import difflib
+import logging
 import os
 import shutil
 import tempfile
 
+import pytest
+
 from tests import TEST_DIR
-from ticktock.renderers import StandardRenderer
+from ticktock.renderers import LoggingRenderer, StandardRenderer
 from ticktock.timer import ClockCollection, tick
 
 
@@ -44,3 +47,35 @@ def test_file_rendering(incremental_timer):
                 t = tick(name="start", collection=collection, timer=incremental_timer)
                 t.tock("end")
         compare_text("file_rendering.txt", os.path.join(tmp_dir, "file_rendering.txt"))
+
+
+def test_log_rendering(caplog, incremental_timer):
+    collection = ClockCollection(renderer=LoggingRenderer(level="DEBUG"))
+    with caplog.at_level(logging.INFO):
+        t = tick(collection=collection)
+        t.tock()
+    assert len(caplog.records) == 0
+
+    collection = ClockCollection(renderer=LoggingRenderer(level="DEBUG"))
+    with caplog.at_level(logging.DEBUG):
+        t = tick(collection=collection)
+        t.tock()
+    assert len(caplog.records) == 1
+    for record in caplog.records:
+        assert hasattr(record, "tick_name")
+        assert hasattr(record, "tock_name")
+        assert hasattr(record, "mean")
+        assert hasattr(record, "std")
+        assert hasattr(record, "min")
+        assert hasattr(record, "max")
+        assert hasattr(record, "count")
+
+    collection = ClockCollection(
+        renderer=LoggingRenderer(level="DEBUG", extra_as_kwargs=True)
+    )
+    with caplog.at_level(logging.DEBUG):
+        t = tick(collection=collection)
+        with pytest.raises(TypeError):
+            # this will fail because standard loggers do not accept
+            # extra as keyword arguments
+            t.tock()
