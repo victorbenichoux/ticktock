@@ -15,7 +15,7 @@ except ImportError:
     has_tqdm = False
 
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
-CLR = "\x1B[0K"
+CLR = "\r\x1B[0K"
 
 FIELDS = {
     "mean": lambda times: format_ns_interval(times.avg_time_ns),
@@ -64,7 +64,7 @@ class StandardRenderer(AbstractRenderer):
         else:
             self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
             self._out.flush()
-        self._has_printed = len(ls)
+        self._has_printed = len(ls)-1
 
     def render_times(self, clock_data: ClockData) -> Iterable[str]:
         for times in clock_data.times.values():
