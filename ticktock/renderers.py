@@ -65,24 +65,26 @@ class StandardRenderer(AbstractRenderer):
 
 
 class LoggingRenderer(AbstractRenderer):
-    def __init__(self, logger=None, extra_as_kwargs: bool = False) -> None:
+    def __init__(
+        self, logger=None, level: str = "INFO", extra_as_kwargs: bool = False
+    ) -> None:
         self.logger = logger or logging.getLogger("ticktock")
-        self._log_function = {
+        _log_function = {
             "DEBUG": self.logger.debug,
             "INFO": self.logger.info,
             "WARNING": self.logger.warning,
             "ERROR": self.logger.error,
             "CRITICAL": self.logger.critical,
-        }
+        }[level]
         if extra_as_kwargs:
 
             def _log(msg, **kwargs):
-                self._log_function(msg, **kwargs)
+                _log_function(msg, **kwargs)
 
         else:
 
             def _log(msg, **kwargs):
-                self._log_function(msg, extra=kwargs)
+                _log_function(msg, extra=kwargs)
 
         self._log = _log
 
