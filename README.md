@@ -61,41 +61,6 @@ Will output:
 ⏱️ [4-6] 1ms count=1000
 ```
 
-# Advanced usage
-
-## Multiple Clocks
-
-You can create multiple independent ticks, which will appear as two separate clocks:
-
-```python
-for _ in range(1000):
-    clock = tick()
-    # do some work
-    time.sleep(1)
-    clock.tock()
-
-    clock = tick()
-    # do some other work
-    time.sleep(0.5)
-    clock.tock()
-```
-
-A single clock can have a multiple `tocks`, which will be displayed as different lines
-
-```python
-for k in range(1000):
-    t = tick()
-    # do some work
-    time.sleep(1)
-    if k % 2 == 1:
-        time.sleep(1)
-        t.tock()
-    else:
-        t.tock()
-```
-
-## Context manager
-
 It is also possible to use `ticktock` as a context manager to track the timing of a chunk of code:
 
 ```python
@@ -105,9 +70,7 @@ with ticktock():
     time.sleep(1)
 ```
 
-## Function decorator
-
-Use the `ticktock` decorator to track the timing of each call to a function:
+Or as a decorator:
 
 ```python
 from ticktock import ticktock
@@ -115,6 +78,8 @@ from ticktock import ticktock
 @ticktock
 def f():
     time.sleep(1)
-
-f()
 ```
+
+
+Checkout the [documentation](https://victorbenichoux.github.io/ticktock/) for a complete manual!
+
