@@ -6,13 +6,16 @@ from ticktock.renderers import StandardRenderer
 from ticktock.timer import ClockCollection, tick
 
 
-def test_file_rendering():
+def test_file_rendering(incremental_timer):
+
     with tempfile.NamedTemporaryFile() as tmp_f:
         with open(tmp_f.name, "w") as f:
-            collection = ClockCollection(renderer=StandardRenderer(out=f))
+            collection = ClockCollection(
+                renderer=StandardRenderer(out=f),
+            )
             for _ in range(10):
-                t = tick(collection=collection)
-                t.tock()
+                t = tick(name="start", collection=collection, timer=incremental_timer)
+                t.tock("end")
 
         with open(tmp_f.name) as f:
             with open(
