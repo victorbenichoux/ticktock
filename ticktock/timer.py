@@ -106,6 +106,7 @@ class Clock:
 
         if tock_id in self.aggregate_times:
             self.aggregate_times[tock_id].update(tock_time_ns, self._tick_time_ns)
+            self.collection.update(force=False)
         else:
             dt = tock_time_ns - self._tick_time_ns
             self.aggregate_times[tock_id] = AggregateTimes(
@@ -118,7 +119,7 @@ class Clock:
                 max_time_ns=dt,
             )
 
-        self.collection.update()
+            self.collection.update(force=True)
         return tock_time_ns
 
 
