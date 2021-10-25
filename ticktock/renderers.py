@@ -7,6 +7,13 @@ from typing import Callable, Iterable, List, Optional, TextIO
 from ticktock.data import ClockData
 from ticktock.utils import format_ns_interval, value_from_env
 
+try:
+    import tqdm
+
+    has_tqdm = True
+except ImportError:
+    has_tqdm = False
+
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
 CLR = "\x1B[0K"
 
@@ -50,8 +57,13 @@ class StandardRenderer(AbstractRenderer):
         for clock_data in render_data:
             for line in self.render_times(clock_data):
                 ls.append(line)
-        self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
-        self._out.flush()
+        if has_tqdm:
+            with tqdm.tqdm.external_write_mode(sys.stderr, nolock=True):
+                self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+                self._out.flush()
+        else:
+            self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+            self._out.flush()
         self._has_printed = len(ls)
 
     def render_times(self, clock_data: ClockData) -> Iterable[str]:
