@@ -7,9 +7,10 @@ from ticktock.timer import ClockCollection, tick
 
 
 def test_file_rendering(incremental_timer):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_fn = os.path.join(tmp_dir, "file_rendering.txt")
+        with open(tmp_fn, mode="w", encoding="utf-8") as f:
 
-    with tempfile.NamedTemporaryFile(mode="w") as tmp_f:
-        with open(tmp_f.name, "w") as f:
             collection = ClockCollection(
                 renderer=StandardRenderer(out=f),
             )
@@ -17,8 +18,9 @@ def test_file_rendering(incremental_timer):
                 t = tick(name="start", collection=collection, timer=incremental_timer)
                 t.tock("end")
 
-        with open(tmp_f.name) as f:
+        with open(tmp_fn, encoding="utf-8") as f:
             with open(
-                os.path.join(TEST_DIR, "testdata", "file_rendering.txt")
+                os.path.join(TEST_DIR, "testdata", "file_rendering.txt"),
+                encoding="utf-8",
             ) as ftruth:
                 assert list(f.readlines()) == list(ftruth.readlines())
