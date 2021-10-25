@@ -61,60 +61,7 @@ Will output:
 ⏱️ [4-6] 1ms count=1000
 ```
 
-# Advanced usage
 
-## Multiple Clocks
+## Rendering
 
-You can create multiple independent ticks, which will appear as two separate clocks:
-
-```python
-for _ in range(1000):
-    clock = tick()
-    # do some work
-    time.sleep(1)
-    clock.tock()
-
-    clock = tick()
-    # do some other work
-    time.sleep(0.5)
-    clock.tock()
-```
-
-A single clock can have a multiple `tocks`, which will be displayed as different lines
-
-```python
-for k in range(1000):
-    t = tick()
-    # do some work
-    time.sleep(1)
-    if k % 2 == 1:
-        time.sleep(1)
-        t.tock()
-    else:
-        t.tock()
-```
-
-## Context manager
-
-It is also possible to use `ticktock` as a context manager to track the timing of a chunk of code:
-
-```python
-from ticktock import ticktock
-
-with ticktock():
-    time.sleep(1)
-```
-
-## Function decorator
-
-Use the `ticktock` decorator to track the timing of each call to a function:
-
-```python
-from ticktock import ticktock
-
-@ticktock
-def f():
-    time.sleep(1)
-
-f()
-```
+`ticktock` allows you to print out periodical information about the time tracked by its different clocks. By default, it is printed to `stdout`, but it is also possible to send log messages (see [Rendering](rendering.md)).
