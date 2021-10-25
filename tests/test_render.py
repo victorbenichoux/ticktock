@@ -8,7 +8,7 @@ from ticktock.timer import ClockCollection, tick
 
 def test_file_rendering(incremental_timer):
 
-    with tempfile.NamedTemporaryFile() as tmp_f:
+    with tempfile.NamedTemporaryFile(mode="w") as tmp_f:
         with open(tmp_f.name, "w") as f:
             collection = ClockCollection(
                 renderer=StandardRenderer(out=f),
