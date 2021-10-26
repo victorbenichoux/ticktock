@@ -1,8 +1,7 @@
-import time
-
 import pytest
 
-from ticktock.timer import Clock, tick, ticktock
+from ticktock import timer
+from ticktock.timer import Clock, clear_collection, tick, ticktock  # noqa: F401
 
 
 def test_tick_simple(fresh_clock_collection):
@@ -15,6 +14,25 @@ def test_tick_simple(fresh_clock_collection):
 
     t.tock()
     assert len(clock.aggregate_times) == 2
+
+
+def test_tick_clear(fresh_clock_collection):
+    t = tick(collection=fresh_clock_collection)
+    t.tock()
+
+    assert len(fresh_clock_collection.clocks) == 1
+    fresh_clock_collection.clear()
+    assert len(fresh_clock_collection.clocks) == 0
+
+
+def test_tick_clear_default():
+    clear_collection()
+    t = tick()
+    t.tock()
+
+    assert len(timer._DEFAULT_COLLECTION.clocks) == 1
+    clear_collection()
+    assert len(timer._DEFAULT_COLLECTION.clocks) == 0
 
 
 @pytest.mark.parametrize("name_tick", [None, "ok"])
@@ -84,14 +102,4 @@ def test_clock_no_tick(fresh_clock_collection):
 def test_contextmanager(fresh_clock_collection):
     with ticktock(collection=fresh_clock_collection):
         pass
-    assert len(fresh_clock_collection.clocks) == 1
-
-
-def test_decorator(fresh_clock_collection):
-    @ticktock(collection=fresh_clock_collection)
-    def f(x):
-        time.sleep(x)
-
-    f(0.1)
-    f(0.1)
     assert len(fresh_clock_collection.clocks) == 1

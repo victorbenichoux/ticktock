@@ -48,6 +48,9 @@ class ClockCollection:
             )
             self._last_refresh_time_s = time.perf_counter()
 
+    def clear(self):
+        self.clocks = {}
+
 
 _DEFAULT_COLLECTION = ClockCollection()
 
@@ -55,6 +58,11 @@ _DEFAULT_COLLECTION = ClockCollection()
 def set_collection(collection: ClockCollection):
     global _DEFAULT_COLLECTION
     _DEFAULT_COLLECTION = collection
+
+
+def clear_collection():
+    global _DEFAULT_COLLECTION
+    _DEFAULT_COLLECTION.clear()
 
 
 class Clock:
@@ -66,6 +74,8 @@ class Clock:
         tick_frame_info: Optional[Tuple[str, int]] = None,
         timer: Optional[Callable[[], int]] = None,
     ) -> None:
+        global _DEFAULT_COLLECTION
+
         self.timer = timer or time.perf_counter_ns
 
         self.collection: ClockCollection = collection or _DEFAULT_COLLECTION
@@ -129,6 +139,7 @@ def tick(
     tick_time_ns: Optional[int] = None,
     timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
+    global _DEFAULT_COLLECTION
     collection = collection or _DEFAULT_COLLECTION
     tick_frame_info = get_frame_info(1)
     filename, lineno = tick_frame_info
