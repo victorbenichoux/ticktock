@@ -16,7 +16,7 @@
 
 ---
 
-`ticktock` is a minimalist library to profile Python code, it displays timing of code snippets periodically.
+`ticktock` is a minimalist library to profile Python code: it periodically displays timing of running code.
 
 # Quickstart
 
@@ -36,14 +36,15 @@ clock = tick()
 clock.tock()
 ```
 
-This will print
+This will print:
 ```
-⏱️ [3-5] 1ms count=1
+⏱️ [3-5] 50us count=1
 ```
-Indicating that lines 3-5 take <1ms to run.
+Indicating that lines 3-5 took <50us to run.
 
+You can use `ticktock` arbitrarily deep inside you Python code and still get meaningful timing information.
 
-If the timed snippet is called multiple times (for example within a loop), measured times will be aggregated and printed periodically (every 2 seconds by default).
+When the timer is called multiple times (for example within a loop), measured times will be aggregated and printed periodically (every 2 seconds by default).
 
 As a result, the following code:
 
@@ -58,10 +59,10 @@ for _ in range(1000):
 
 Will output:
 ```
-⏱️ [4-6] 1ms count=1000
+⏱️ [4-6] 50us count=1000
 ```
 
-It is also possible to use `ticktock` as a context manager to track the timing of a chunk of code:
+`ticktock` acts as a context manager to track the timing of a chunk of code:
 
 ```python
 from ticktock import ticktock
@@ -79,7 +80,6 @@ from ticktock import ticktock
 def f():
     time.sleep(1)
 ```
-
 
 Checkout the [documentation](https://victorbenichoux.github.io/ticktock/) for a complete manual!
 
