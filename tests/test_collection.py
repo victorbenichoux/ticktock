@@ -1,6 +1,6 @@
 from ticktock import timer
 from ticktock.renderers import FORMATS, StandardRenderer
-from ticktock.timer import ClockCollection, set_collection, tick
+from ticktock.timer import ClockCollection, disable, enable, set_collection, tick
 
 
 def test_env_set_period(fresh_configuration, monkeypatch):
@@ -24,3 +24,22 @@ def test_env_set_renderer_format(fresh_configuration, monkeypatch):
 
     renderer = StandardRenderer(format="long")
     assert renderer._format == FORMATS["long"]
+
+
+def test_set_enable_disable(fresh_configuration, monkeypatch):
+    collection = ClockCollection()
+    assert collection._enabled
+
+    monkeypatch.setenv("TICKTOCK_DISABLE", "True")
+    collection = ClockCollection()
+    assert not collection._enabled
+
+    monkeypatch.delenv("TICKTOCK_DISABLE")
+    collection = ClockCollection()
+    assert collection._enabled
+
+    disable()
+    assert not timer._DEFAULT_COLLECTION._enabled
+
+    enable()
+    assert timer._DEFAULT_COLLECTION._enabled
