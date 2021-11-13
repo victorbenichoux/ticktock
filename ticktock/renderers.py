@@ -70,12 +70,14 @@ class StandardRenderer(AbstractRenderer):
                 ls.append(line)
         if has_tqdm:
             with tqdm.tqdm.external_write_mode(sys.stderr, nolock=True):
-                self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+                self._out.write(
+                    UP(self._has_printed) + CLR + f"\n{CLR}".join(ls) + "\n"
+                )
                 self._out.flush()
         else:
-            self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls))
+            self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls) + "\n")
             self._out.flush()
-        self._has_printed = len(ls) - 1
+        self._has_printed = len(ls)
 
     def render_times(self, clock_data: ClockData) -> Iterable[str]:
         for times in clock_data.times.values():
