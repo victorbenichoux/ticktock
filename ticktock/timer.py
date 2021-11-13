@@ -28,7 +28,11 @@ class ClockCollection:
         self,
         period: Optional[float] = None,
         renderer: Optional[AbstractRenderer] = None,
+        enabled: Optional[bool] = None,
     ) -> None:
+        self._enabled = enabled
+        if self._enabled is None:
+            self._enabled = not value_from_env("TICKTOCK_DISABLE", False)
         self.clocks: Dict[str, Clock] = {}
         self._last_refresh_time_s: Optional[float] = None
         self._period: float = period or value_from_env("TICKTOCK_DEFAULT_PERIOD", 2.0)
@@ -36,9 +40,12 @@ class ClockCollection:
         _ALL_COLLECTIONS.append(weakref.ref(self))
 
     def update(self, force: bool = False):
-        if force or (
-            self._last_refresh_time_s is None
-            or time.perf_counter() - self._last_refresh_time_s > self._period
+        if self._enabled and (
+            force
+            or (
+                self._last_refresh_time_s is None
+                or time.perf_counter() - self._last_refresh_time_s > self._period
+            )
         ):
             self.renderer.render(
                 [
@@ -50,6 +57,16 @@ class ClockCollection:
 
     def clear(self):
         self.clocks = {}
+
+    def enable(self):
+        for clock in self.clocks.values():
+            clock.enable()
+        self._enabled = True
+
+    def disable(self):
+        for clock in self.clocks.values():
+            clock.enable()
+        self._enabled = False
 
 
 _DEFAULT_COLLECTION = ClockCollection()
@@ -65,6 +82,16 @@ def clear_collection():
     _DEFAULT_COLLECTION.clear()
 
 
+def enable():
+    global _DEFAULT_COLLECTION
+    _DEFAULT_COLLECTION.enable()
+
+
+def disable():
+    global _DEFAULT_COLLECTION
+    _DEFAULT_COLLECTION.disable()
+
+
 class Clock:
     def __init__(
         self,
@@ -73,8 +100,12 @@ class Clock:
         tick_time_ns: Optional[int] = None,
         tick_frame_info: Optional[Tuple[str, int]] = None,
         timer: Optional[Callable[[], int]] = None,
+        enabled: Optional[bool] = None,
     ) -> None:
         global _DEFAULT_COLLECTION
+        self._enabled = enabled
+        if self._enabled is None:
+            self._enabled = not value_from_env("TICKTOCK_DISABLE", False)
 
         self.timer = timer or time.perf_counter_ns
 
@@ -96,7 +127,9 @@ class Clock:
 
         self._tick_time_ns: Optional[int] = tick_time_ns
 
-    def tick(self) -> float:
+    def tick(self) -> Optional[float]:
+        if not self.is_enabled():
+            return
         self._tick_time_ns = self.timer()
         return self._tick_time_ns
 
@@ -104,7 +137,9 @@ class Clock:
         self,
         name: Optional[str] = None,
         tock_frame_info: Optional[Tuple[str, int]] = None,
-    ) -> float:
+    ) -> Optional[float]:
+        if not self.is_enabled():
+            return
         filename, lineno = tock_frame_info or get_frame_info(1)
         tock_id = name or f"{filename}:{lineno}"
         tock_name = name or str(lineno)
@@ -131,6 +166,15 @@ class Clock:
 
             self.collection.update(force=True)
         return tock_time_ns
+
+    def enable(self):
+        self._enabled = True
+
+    def disable(self):
+        self._enabled = False
+
+    def is_enabled(self):
+        return self._enabled and self.collection._enabled
 
 
 def tick(
