@@ -11,7 +11,7 @@ time_factors = [
 ]
 
 
-def format_ns_interval(v_ns: float, max_terms: int = 1):
+def format_ns_interval(v_ns: float, max_terms: int = 2):
     remainder = v_ns
     out_str = ""
     n_terms = 0

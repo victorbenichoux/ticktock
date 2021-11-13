@@ -17,12 +17,15 @@ except ImportError:
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
 CLR = "\r\x1B[0K"
 
+TIME_FIELDS = {
+    "mean": lambda times: times.avg_time_ns,
+    "std": lambda times: times.std_time_ns,
+    "min": lambda times: times.min_time_ns,
+    "max": lambda times: times.max_time_ns,
+    "last": lambda times: times.last_time_ns,
+}
+
 FIELDS = {
-    "mean": lambda times: format_ns_interval(times.avg_time_ns),
-    "std": lambda times: format_ns_interval(times.std_time_ns),
-    "min": lambda times: format_ns_interval(times.min_time_ns),
-    "max": lambda times: format_ns_interval(times.max_time_ns),
-    "last": lambda times: format_ns_interval(times.last_time_ns),
     "count": lambda times: times.n_periods,
 }
 
@@ -39,17 +42,25 @@ FORMATS = {
 
 
 class StandardRenderer(AbstractRenderer):
-    def __init__(self, format: Optional[str] = None, out: TextIO = sys.stderr) -> None:
+    def __init__(
+        self, format: Optional[str] = None, out: TextIO = sys.stderr, max_terms: int = 2
+    ) -> None:
         self._format: str = format or value_from_env("TICKTOCK_DEFAULT_FORMAT", "short")
         if self._format in FORMATS:
             self._format = FORMATS[self._format]
+        self._max_terms = max_terms
         self._out = out
         self._fields: List[str] = []
+        self._time_fields: List[str] = []
         for (_, field_name, _, _) in Formatter().parse(self._format):
             if field_name is not None:
-                if field_name not in FIELDS:
-                    raise ValueError(f"Field {field_name} unknown in format string")
-                self._fields.append(field_name)
+                if field_name in FIELDS:
+                    self._fields.append(field_name)
+                    continue
+                if field_name in TIME_FIELDS:
+                    self._time_fields.append(field_name)
+                    continue
+                raise ValueError(f"Field {field_name} unknown in format string")
         self._has_printed = 0
 
     def render(self, render_data: List[ClockData]) -> None:
@@ -73,7 +84,13 @@ class StandardRenderer(AbstractRenderer):
                 + "⏱️ "
                 + f"[{clock_data.tick_name}-{times.tock_name}] "
                 + self._format.format(
-                    **{key: FIELDS[key](times) for key in self._fields}
+                    **{
+                        key: format_ns_interval(
+                            TIME_FIELDS[key](times), max_terms=self._max_terms
+                        )
+                        for key in self._time_fields
+                    },
+                    **{key: str(FIELDS[key](times)) for key in self._fields},
                 )
             )
 

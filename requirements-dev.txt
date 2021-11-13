@@ -13,3 +13,5 @@ isort
 wheel
 bump2version
 twine
+# docs
+mkdocs-material
