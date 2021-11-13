@@ -32,14 +32,14 @@ def test_set_enable_disable(fresh_configuration, monkeypatch):
 
     monkeypatch.setenv("TICKTOCK_DISABLE", "True")
     collection = ClockCollection()
-    assert collection._enabled == False
+    assert not collection._enabled
 
     monkeypatch.delenv("TICKTOCK_DISABLE")
     collection = ClockCollection()
-    assert collection._enabled == True
+    assert collection._enabled
 
     disable()
-    assert timer._DEFAULT_COLLECTION._enabled == False
+    assert not timer._DEFAULT_COLLECTION._enabled
 
     enable()
-    assert timer._DEFAULT_COLLECTION._enabled == True
+    assert timer._DEFAULT_COLLECTION._enabled

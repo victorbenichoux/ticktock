@@ -107,18 +107,18 @@ def test_contextmanager(fresh_clock_collection):
 
 def test_collection_disabled(fresh_clock_collection, incremental_timer):
     fresh_clock_collection.disable()
-    assert fresh_clock_collection._enabled == False
+    assert not fresh_clock_collection._enabled
 
     clock = tick(collection=fresh_clock_collection, timer=incremental_timer)
     assert clock._enabled
-    assert clock.is_enabled() == False
+    assert not clock.is_enabled()
 
     v = clock.tock()
-    assert v == None
+    assert v is None
     v = clock.tock()
-    assert v == None
+    assert v is None
 
-    assert clock._tick_time_ns == None
+    assert clock._tick_time_ns is None
     assert len(list(clock.aggregate_times.values())) == 0
     assert len(list(clock.aggregate_times.values())) == 0
 
@@ -130,7 +130,7 @@ def test_collection_disabled(fresh_clock_collection, incremental_timer):
     assert len(list(clock.aggregate_times.values())) == 1
 
     clock.disable()
-    assert clock._enabled == False
+    assert not clock._enabled
 
     fresh_clock_collection.enable()
-    assert clock.is_enabled() == True
+    assert clock.is_enabled()

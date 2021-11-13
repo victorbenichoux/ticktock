@@ -129,7 +129,7 @@ class Clock:
 
     def tick(self) -> Optional[float]:
         if not self.is_enabled():
-            return
+            return None
         self._tick_time_ns = self.timer()
         return self._tick_time_ns
 
@@ -139,7 +139,7 @@ class Clock:
         tock_frame_info: Optional[Tuple[str, int]] = None,
     ) -> Optional[float]:
         if not self.is_enabled():
-            return
+            return None
         filename, lineno = tock_frame_info or get_frame_info(1)
         tock_id = name or f"{filename}:{lineno}"
         tock_name = name or str(lineno)
