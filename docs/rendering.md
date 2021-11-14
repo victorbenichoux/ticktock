@@ -1,8 +1,18 @@
-# Rendering
 
-## Specifying a renderer
+## Advanced rendering
 
-The renderer for `ticktock` is defined through the `ClockCollection` object. Create your own `ClockCollection` to modify it, and set it as the default collection, for example:
+This section describes how to specify the exact renderer objects used by `ticktock`: 
+
+- A [StandardRenderer](#standard-renderer) to print to a file, or even more control on the output
+- A [LoggingRenderer](#logging-renderer) to send log messages
+
+### Specifying a renderer
+
+In `ticktock`, each ticktock `ClockCollection` object has a renderer attribute that controls how the clocks are rendered.
+
+Create your own `ClockCollection` with a custom renderer to customiwe the way `ticktock` renders your clocks. 
+
+Then, set it as the default collection so all your `tick`s and `tock`s are attached to it:
 
 ```python
 from ticktock.timer import ClockCollection, set_collection
@@ -12,7 +22,7 @@ collection = ClockCollection(renderer = renderers.StandardRenderer())
 set_collection(collection=collection)
 ```
 
-## Standard renderer
+### Standard renderer
 
 The `StandardRenderer` is used by default and prints to stdout: 
 
@@ -20,17 +30,9 @@ The `StandardRenderer` is used by default and prints to stdout:
 StandardRenderer(format: Optional[str] = None, out: TextIO = sys.stderr, max_terms: int = 2)
 ```
 
-- `format` is a regular Python format string describing the desired output. See [format strings](#format-string)
+- `format` is a regular Python format string describing the desired output. See [format strings](#changing-format)
 - `out` is a text IO stream to write to
 - `max_terms` controls the number of units to display. `1.3` seconds will be written as `1s` with max_terms = 1 or `1s300ms` with `max_terms = 2`
-
-### Format string
-
-The keys in the format string have to be amongst the available timings aggregates: `"mean"`, `"std"`, `"min"`, `"max"`, `"last"` and `"count"`.
-Two special `formats` are accepted too:
-
-- `"short"` corresponding to  `"{mean} count={count}"`
-- `"long"` corresponding to `"{mean} ({std} std) min={min} max={max} count={count} last={last}"`
 
     
 ## Logging renderer

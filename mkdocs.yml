@@ -4,10 +4,12 @@ site_description: 'Simple Python code metering library'
 
 nav:
   - Home: 'index.md'
-  - Advanced: 'advanced.md'
-  - Clocks: 'clocks.md'
-  - Collection: 'collection.md'
-  - Rendering: 'rendering.md'
+  - Using clocks: 'using_clocks.md'
+  - Customize output: 'customize.md'
+  - Advanced topics:
+    - Clocks: 'clocks.md'
+    - Collection: 'collection.md'
+    - Renderer: 'rendering.md'
 
 theme:
   name: 'material'

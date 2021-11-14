@@ -1,7 +1,9 @@
 
+The most important objects in `ticktock` are clocks, which record timing.
+
 ## Clocks
 
-It is possible to use `Clock` objects directly:
+You can define a `Clock` directly, and use its `tick` and `tock` methods:
 
 ```python
 from ticktock.timer import Clock
