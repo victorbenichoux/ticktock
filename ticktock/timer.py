@@ -71,7 +71,9 @@ class ClockCollection:
             clock.enable()
         self._enabled = False
 
-    def set_format(self, format: str = None, max_terms: int = None):
+    def set_format(
+        self, format: str = None, max_terms: int = None, no_update: bool = None
+    ):
         if not isinstance(self.renderer, StandardRenderer):
             logger.warn("Setting format of a renderer that does not support format")
             return
@@ -79,6 +81,8 @@ class ClockCollection:
             self.renderer.set_format(format)
         if max_terms is not None:
             self.renderer._max_terms = max_terms
+        if no_update is not None:
+            self.renderer._no_update = no_update
 
 
 _DEFAULT_COLLECTION = ClockCollection()
@@ -104,9 +108,11 @@ def disable():
     _DEFAULT_COLLECTION.disable()
 
 
-def set_format(format: str = None, max_terms: int = None):
+def set_format(format: str = None, max_terms: int = None, no_update: bool = None):
     global _DEFAULT_COLLECTION
-    _DEFAULT_COLLECTION.set_format(format=format, max_terms=max_terms)
+    _DEFAULT_COLLECTION.set_format(
+        format=format, max_terms=max_terms, no_update=no_update
+    )
 
 
 class Clock:

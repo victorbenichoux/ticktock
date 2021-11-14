@@ -49,13 +49,19 @@ class StandardRenderer(AbstractRenderer):
     _time_fields: List[str] = []
     _max_terms: int
     _out: TextIO
+    _no_update: bool = False
 
     def __init__(
-        self, format: Optional[str] = None, out: TextIO = sys.stderr, max_terms: int = 2
+        self,
+        format: Optional[str] = None,
+        out: TextIO = sys.stderr,
+        max_terms: int = 2,
+        no_update: bool = False,
     ) -> None:
         self.set_format(format or value_from_env("TICKTOCK_DEFAULT_FORMAT", "short"))
         self._max_terms = max_terms
         self._out = out
+        self._no_update = no_update
 
     def set_format(self, format: str):
         self._format = format
@@ -82,20 +88,27 @@ class StandardRenderer(AbstractRenderer):
                 ls.append(line)
         if has_tqdm:
             with tqdm.tqdm.external_write_mode(sys.stderr, nolock=True):
+                if self._no_update:
+                    self._out.write("\n".join(ls) + "\n")
+                else:
+                    self._out.write(
+                        UP(self._has_printed) + CLR + f"\n{CLR}".join(ls) + "\n"
+                    )
+                self._out.flush()
+        else:
+            if self._no_update:
+                self._out.write("\n".join(ls) + "\n")
+            else:
                 self._out.write(
                     UP(self._has_printed) + CLR + f"\n{CLR}".join(ls) + "\n"
                 )
-                self._out.flush()
-        else:
-            self._out.write(UP(self._has_printed) + CLR + f"\n{CLR}".join(ls) + "\n")
             self._out.flush()
         self._has_printed = len(ls)
 
     def render_times(self, clock_data: ClockData) -> Iterable[str]:
         for times in clock_data.times.values():
             yield (
-                CLR
-                + "⏱️ "
+                "⏱️ "
                 + f"[{clock_data.tick_name}-{times.tock_name}] "
                 + self._format.format(
                     **{
