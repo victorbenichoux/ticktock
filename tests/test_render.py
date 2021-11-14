@@ -49,6 +49,24 @@ def test_file_rendering(incremental_timer):
         compare_text("file_rendering.txt", os.path.join(tmp_dir, "file_rendering.txt"))
 
 
+def test_file_rendering_custom(incremental_timer):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_fn = os.path.join(tmp_dir, "file_rendering_custom.txt")
+        with open(tmp_fn, mode="w", encoding="utf-8") as f:
+            collection = ClockCollection(
+                renderer=StandardRenderer(out=f),
+            )
+            set_collection(collection)
+            set_format("{mean} {min} {max} {std} {last} {count}", max_terms=1)
+            for _ in range(10):
+                t = tick(name="start", collection=collection, timer=incremental_timer)
+                t.tock("end")
+        compare_text(
+            "file_rendering_custom.txt",
+            os.path.join(tmp_dir, "file_rendering_custom.txt"),
+        )
+
+
 def test_file_rendering_long(incremental_timer):
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_fn = os.path.join(tmp_dir, "file_rendering_long.txt")
@@ -56,7 +74,8 @@ def test_file_rendering_long(incremental_timer):
             collection = ClockCollection(
                 renderer=StandardRenderer(out=f),
             )
-            collection.renderer.set_format("long")
+            set_collection(collection)
+            set_format("long")
             for _ in range(10):
                 t = tick(name="start", collection=collection, timer=incremental_timer)
                 t.tock("end")
