@@ -8,7 +8,11 @@ def fresh_clock_collection():
     return ClockCollection()
 
 
-CONFIGURATION_ENV_VARS = ["TICKTOCK_DEFAULT_PERIOD", "TICKTOCK_DEFAULT_FORMAT"]
+CONFIGURATION_ENV_VARS = [
+    "TICKTOCK_DEFAULT_PERIOD",
+    "TICKTOCK_DEFAULT_FORMAT",
+    "TICKTOCK_DISABLE",
+]
 
 
 @pytest.fixture(scope="function")
