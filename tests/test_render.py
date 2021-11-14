@@ -82,7 +82,7 @@ def test_set_format_invalid_renderer(caplog):
     assert len(caplog.records) == 1
 
 
-def test_log_rendering(caplog, incremental_timer):
+def test_log_rendering(caplog):
     collection = ClockCollection(renderer=LoggingRenderer(level="DEBUG"))
     with caplog.at_level(logging.INFO):
         t = tick(collection=collection)
