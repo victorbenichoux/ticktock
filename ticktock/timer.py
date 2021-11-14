@@ -1,5 +1,6 @@
 import atexit
 import inspect
+import logging
 import os
 import time
 import weakref
@@ -8,6 +9,8 @@ from typing import Callable, Dict, Optional, Tuple
 from ticktock.data import AggregateTimes, ClockData
 from ticktock.renderers import AbstractRenderer, StandardRenderer
 from ticktock.utils import value_from_env
+
+logger = logging.getLogger("ticktock.timer")
 
 
 def get_frame_info(level=1):
@@ -68,6 +71,12 @@ class ClockCollection:
             clock.enable()
         self._enabled = False
 
+    def set_format(self, format: str):
+        if not isinstance(self.renderer, StandardRenderer):
+            logger.warn("Setting format of a renderer that does not support format")
+            return
+        self.renderer.set_format(format)
+
 
 _DEFAULT_COLLECTION = ClockCollection()
 
@@ -90,6 +99,11 @@ def enable():
 def disable():
     global _DEFAULT_COLLECTION
     _DEFAULT_COLLECTION.disable()
+
+
+def set_format(format: str):
+    global _DEFAULT_COLLECTION
+    _DEFAULT_COLLECTION.set_format(format)
 
 
 class Clock:

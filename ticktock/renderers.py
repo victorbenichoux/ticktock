@@ -14,6 +14,8 @@ try:
 except ImportError:
     has_tqdm = False
 
+logger = logging.getLogger("ticktock.renderers")
+
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
 CLR = "\r\x1B[0K"
 
@@ -42,16 +44,25 @@ FORMATS = {
 
 
 class StandardRenderer(AbstractRenderer):
+    _format: str = ""
+    _fields: List[str] = []
+    _time_fields: List[str] = []
+    _max_terms: int
+    _out: TextIO
+
     def __init__(
         self, format: Optional[str] = None, out: TextIO = sys.stderr, max_terms: int = 2
     ) -> None:
-        self._format: str = format or value_from_env("TICKTOCK_DEFAULT_FORMAT", "short")
-        if self._format in FORMATS:
-            self._format = FORMATS[self._format]
+        self.set_format(format or value_from_env("TICKTOCK_DEFAULT_FORMAT", "short"))
         self._max_terms = max_terms
         self._out = out
-        self._fields: List[str] = []
-        self._time_fields: List[str] = []
+
+    def set_format(self, format: str):
+        self._format = format
+        if self._format in FORMATS:
+            self._format = FORMATS[self._format]
+        self._fields = []
+        self._time_fields = []
         for (_, field_name, _, _) in Formatter().parse(self._format):
             if field_name is not None:
                 if field_name in FIELDS:
@@ -64,6 +75,7 @@ class StandardRenderer(AbstractRenderer):
         self._has_printed = 0
 
     def render(self, render_data: List[ClockData]) -> None:
+        logger.debug("Rendering clock format={self._format}")
         ls: List[str] = []
         for clock_data in render_data:
             for line in self.render_times(clock_data):
