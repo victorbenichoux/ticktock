@@ -8,7 +8,7 @@ import pytest
 
 from tests import TEST_DIR
 from ticktock.renderers import LoggingRenderer, StandardRenderer
-from ticktock.timer import ClockCollection, tick
+from ticktock.timer import ClockCollection, set_collection, set_format, tick
 
 
 def compare_text(truth_fn, result_fn):
@@ -49,7 +49,77 @@ def test_file_rendering(incremental_timer):
         compare_text("file_rendering.txt", os.path.join(tmp_dir, "file_rendering.txt"))
 
 
-def test_log_rendering(caplog, incremental_timer):
+def test_file_rendering_custom(incremental_timer):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_fn = os.path.join(tmp_dir, "file_rendering_custom.txt")
+        with open(tmp_fn, mode="w", encoding="utf-8") as f:
+            collection = ClockCollection(
+                renderer=StandardRenderer(out=f),
+            )
+            set_collection(collection)
+            set_format("{mean} {min} {max} {std} {last} {count}", max_terms=1)
+            for _ in range(10):
+                t = tick(name="start", collection=collection, timer=incremental_timer)
+                t.tock("end")
+        compare_text(
+            "file_rendering_custom.txt",
+            os.path.join(tmp_dir, "file_rendering_custom.txt"),
+        )
+
+
+def test_file_rendering_long(incremental_timer):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_fn = os.path.join(tmp_dir, "file_rendering_long.txt")
+        with open(tmp_fn, mode="w", encoding="utf-8") as f:
+            collection = ClockCollection(
+                renderer=StandardRenderer(out=f),
+            )
+            set_collection(collection)
+            set_format("long")
+            for _ in range(10):
+                t = tick(name="start", collection=collection, timer=incremental_timer)
+                t.tock("end")
+        compare_text(
+            "file_rendering_long.txt", os.path.join(tmp_dir, "file_rendering_long.txt")
+        )
+
+
+def test_file_rendering_no_update(incremental_timer):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_fn = os.path.join(tmp_dir, "file_rendering_no_update.txt")
+        with open(tmp_fn, mode="w", encoding="utf-8") as f:
+            collection = ClockCollection(
+                renderer=StandardRenderer(out=f),
+            )
+            set_collection(collection)
+            set_format(no_update=True)
+            for _ in range(10):
+                t = tick(name="start", collection=collection, timer=incremental_timer)
+                t.tock("end")
+        compare_text(
+            "file_rendering_no_update.txt",
+            os.path.join(tmp_dir, "file_rendering_no_update.txt"),
+        )
+
+
+def test_set_format(caplog):
+    renderer = StandardRenderer()
+    collection = ClockCollection(renderer=renderer)
+    set_collection(collection)
+    set_format("a format")
+    assert renderer._format == "a format"
+
+
+def test_set_format_invalid_renderer(caplog):
+    renderer = LoggingRenderer()
+    collection = ClockCollection(renderer=renderer)
+    set_collection(collection)
+    with caplog.at_level(logging.WARNING):
+        set_format("a format")
+    assert len(caplog.records) == 1
+
+
+def test_log_rendering(caplog):
     collection = ClockCollection(renderer=LoggingRenderer(level="DEBUG"))
     with caplog.at_level(logging.INFO):
         t = tick(collection=collection)

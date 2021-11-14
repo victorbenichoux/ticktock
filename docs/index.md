@@ -18,13 +18,15 @@
 
 `ticktock` is a minimalist library to profile Python code, it displays timing of code snippets periodically.
 
-# Quickstart
+# Installation
 
 
-First, install `ticktock`:
+`ticktock` is available in the PyPI repository:
 ```
 pip install py-ticktock
 ```
+
+# Quick start
 
 Anywhere in your code you can use `tick` to start a clock, and `tock` to register the end of the snippet you want to time:
 
@@ -62,6 +64,6 @@ Will output:
 ```
 
 
-## Rendering
+## Customize rendering
 
 `ticktock` allows you to print out periodical information about the time tracked by its different clocks. By default, it is printed to `stdout`, but it is also possible to send log messages (see [Rendering](rendering.md)).

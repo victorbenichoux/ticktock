@@ -1,0 +1,1 @@
+[0K⏱️ [start-end] 1ns ( std) min=1ns max=1ns count=1 last=1ns
