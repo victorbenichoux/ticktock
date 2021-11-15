@@ -35,6 +35,11 @@ FIELDS = {
     "tock_line": lambda clock_data, times: times.tock_line,
     "tick_filename": lambda clock_data, times: clock_data.tick_filename,
     "tock_filename": lambda clock_data, times: times.tock_filename,
+    "avg_time_ns": lambda clock_data, times: times.avg_time_ns,
+    "std_time_ns": lambda clock_data, times: times.std_time_ns,
+    "min_time_ns": lambda clock_data, times: times.min_time_ns,
+    "max_time_ns": lambda clock_data, times: times.max_time_ns,
+    "last_time_ns": lambda clock_data, times: times.last_time_ns,
 }
 
 
