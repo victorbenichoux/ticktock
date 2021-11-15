@@ -24,7 +24,9 @@ Equivalently, to globally set the format string, set the `TICKTOCK_DEFAULT_FORMA
 ### Format string keys
 
 
-The keys in the format string have to be one the available timing aggregates: 
+The keys in the format string have to be amongst the available attributes, and will be replaced by their value at render.
+
+Keys are of two distinct types, *time keys* and normal keys. Time keys will be replaced by a string representing the timing value with its unit attached:
 
 - `mean`: the average of all past time intervals
 - `std`: the standard deviation of all past time intervals
@@ -33,12 +35,25 @@ The keys in the format string have to be one the available timing aggregates:
 - `last`: the last measured time
 - `count`: the numer of intervals measured.
 
-Each of the keys will be replaced by a string representing the timing value with its unit attached. 
+Normal keys have properties related to the position of the tick or tock:
+
+- `tick_name`: the tick name if set when calling `tick`, otherwise equal to `{tick_filename}:{tick_line}`
+- `tock_name`: the tock name if set when calling `tock`, otherwise equal to `{tock_line}`
+- `tick_line`: the line at which `tick` was called in your code
+- `tock_line`: the line at which `tock` was called in your code
+- `tick_filename`: the name of the file in which `tick` was called
+- `tock_filename`: the name of the file in which `tock` was called
 
 In addition, two special cased formats are accepted too:
 
-- `short` corresponding to  `"{mean} count={count}"`
-- `long` corresponding to `"{mean} ({std} std) min={min} max={max} count={count} last={last}"`
+- `short` with just the average time and the count 
+```python
+"⏱️ [{tick_name}-{tock_name}] {mean} count={count}"
+```
+- `long` corresponding to 
+```python
+"⏱️ [{tick_name}-{tock_name}] {mean} ({std} std) min={min} max={max} count={count} last={last}"
+```
 
 ### Units
 
@@ -52,6 +67,18 @@ from ticktock import set_format
 
 set_format(max_terms = 3)
 ```
+
+### Raw time fields
+
+You can access the raw (floating point) values of the time aggregates as keys in the `format` string as well.
+
+These are all recorded in nanoseconds (unless you specified a different `timer` function):
+
+- `avg_time_ns`:the average of all past time intervals
+- `std_time_ns`: the standard deviation of all past time intervals
+- `min_time_ns`: the minimum measured time
+- `max_time_ns`: the maximum measured time
+- `last_time_ns`: the last measured time
 
 
 ### Updated lines

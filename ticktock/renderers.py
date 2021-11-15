@@ -28,7 +28,18 @@ TIME_FIELDS = {
 }
 
 FIELDS = {
-    "count": lambda times: times.n_periods,
+    "count": lambda clock_data, times: times.n_periods,
+    "tick_name": lambda clock_data, times: clock_data.tick_name,
+    "tock_name": lambda clock_data, times: times.tock_name,
+    "tick_line": lambda clock_data, times: clock_data.tick_line,
+    "tock_line": lambda clock_data, times: times.tock_line,
+    "tick_filename": lambda clock_data, times: clock_data.tick_filename,
+    "tock_filename": lambda clock_data, times: times.tock_filename,
+    "avg_time_ns": lambda clock_data, times: times.avg_time_ns,
+    "std_time_ns": lambda clock_data, times: times.std_time_ns,
+    "min_time_ns": lambda clock_data, times: times.min_time_ns,
+    "max_time_ns": lambda clock_data, times: times.max_time_ns,
+    "last_time_ns": lambda clock_data, times: times.last_time_ns,
 }
 
 
@@ -38,8 +49,10 @@ class AbstractRenderer(abc.ABC):
 
 
 FORMATS = {
-    "short": "{mean} count={count}",
-    "long": "{mean} ({std} std) min={min} max={max} count={count} last={last}",
+    "short": "⏱️ [{tick_name}-{tock_name}] {mean} count={count}",
+    "long": "⏱️ [{tick_name}-{tock_name}] "
+    "{mean} ({std} std) min={min} max={max}"
+    " count={count} last={last}",
 }
 
 
@@ -108,8 +121,7 @@ class StandardRenderer(AbstractRenderer):
     def render_times(self, clock_data: ClockData) -> Iterable[str]:
         for times in clock_data.times.values():
             yield (
-                "⏱️ "
-                + f"[{clock_data.tick_name}-{times.tock_name}] "
+                ""
                 + self._format.format(
                     **{
                         key: format_ns_interval(
@@ -117,7 +129,9 @@ class StandardRenderer(AbstractRenderer):
                         )
                         for key in self._time_fields
                     },
-                    **{key: str(FIELDS[key](times)) for key in self._fields},
+                    **{
+                        key: str(FIELDS[key](clock_data, times)) for key in self._fields
+                    },
                 )
             )
 
