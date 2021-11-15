@@ -213,6 +213,30 @@ class Clock:
     def is_enabled(self):
         return self._enabled and self.collection._enabled
 
+    @staticmethod
+    def _get_or_create_clock(
+        name: str = None,
+        collection: Optional[ClockCollection] = None,
+        tick_time_ns: Optional[int] = None,
+        timer: Optional[Callable[[], int]] = None,
+    ):
+        global _DEFAULT_COLLECTION
+        collection = collection or _DEFAULT_COLLECTION
+        tick_frame_info = get_frame_info(2)
+        filename, lineno = tick_frame_info
+        if name and name in collection.clocks:
+            return collection.clocks[name]
+        elif f"{filename}:{lineno}" in collection.clocks:
+            return collection.clocks[f"{filename}:{lineno}"]
+        else:
+            return Clock(
+                name=name,
+                collection=collection,
+                tick_time_ns=tick_time_ns,
+                tick_frame_info=tick_frame_info,
+                timer=timer,
+            )
+
 
 def tick(
     name: str = None,
@@ -220,22 +244,9 @@ def tick(
     tick_time_ns: Optional[int] = None,
     timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
-    global _DEFAULT_COLLECTION
-    collection = collection or _DEFAULT_COLLECTION
-    tick_frame_info = get_frame_info(1)
-    filename, lineno = tick_frame_info
-    if name and name in collection.clocks:
-        clock = collection.clocks[name]
-    elif f"{filename}:{lineno}" in collection.clocks:
-        clock = collection.clocks[f"{filename}:{lineno}"]
-    else:
-        clock = Clock(
-            name=name,
-            collection=collection,
-            tick_time_ns=tick_time_ns,
-            tick_frame_info=tick_frame_info,
-            timer=timer,
-        )
+    clock = Clock._get_or_create_clock(
+        name=name, collection=collection, tick_time_ns=tick_time_ns, timer=timer
+    )
     clock.tick()
     return clock
 
