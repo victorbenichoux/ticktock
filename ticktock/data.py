@@ -6,6 +6,9 @@ from typing import Dict
 @dataclass
 class AggregateTimes:
     tock_name: str
+    tock_filename: str
+    tock_line: int
+
     avg_time_ns: float
     min_time_ns: float
     max_time_ns: float
@@ -41,3 +44,5 @@ class AggregateTimes:
 class ClockData:
     times: Dict[str, AggregateTimes]
     tick_name: str
+    tick_filename: str
+    tick_line: int

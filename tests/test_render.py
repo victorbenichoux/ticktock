@@ -57,7 +57,10 @@ def test_file_rendering_custom(incremental_timer):
                 renderer=StandardRenderer(out=f),
             )
             set_collection(collection)
-            set_format("{mean} {min} {max} {std} {last} {count}", max_terms=1)
+            set_format(
+                "⏱️ [{tick_name}-{tock_name}] {mean} {min} {max} {std} {last} {count}",
+                max_terms=1,
+            )
             for _ in range(10):
                 t = tick(name="start", collection=collection, timer=incremental_timer)
                 t.tock("end")
