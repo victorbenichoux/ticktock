@@ -44,7 +44,7 @@ This will print the timing of the lines 3 to 5 in your code as so:
 
 `ticktock` becomes really useful when you are trying to time code that is called multiple times. 
 
-Rather than printing a new line each time the code is visited, `ticktock` computes tracks the times and *only prints them every couple of seconds*. 
+Rather than printing a new line each time the code is visited, `ticktock` tracks the times and *only prints them every couple of seconds*. 
 
 `ticktock`'s output is **compact and readable**, regardless of how many times you run through the code you are timing, or where this code is.
 
