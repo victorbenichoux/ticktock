@@ -97,6 +97,22 @@ from ticktock import set_format
 set_format(no_update=True)
 ```
 
+## Change rendering period
+
+By default, `ticktock` renders clocks with a fixed period of two seconds. This can be changed globally by using `set_period`:
+
+```python
+from ticktock import tick
+
+set_period(1)
+```
+
+Internally, `ticktock` will render all clocks whenever the period is elapsed, and a clock's `tock` was called. In addition to this, rendering also occurs:
+
+- at the first `tock` of any clock
+- when the program exits
+
+
 ## Enabling or disabling clocks
 
 It is possible to disable `ticktock` clocks: when disabled, the intervals between ticks and tocks are no longer recorded, and will not be rendered either.

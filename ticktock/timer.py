@@ -87,6 +87,11 @@ def set_collection(collection: ClockCollection):
     _DEFAULT_COLLECTION = collection
 
 
+def set_period(period: float):
+    global _DEFAULT_COLLECTION
+    _DEFAULT_COLLECTION._period = period
+
+
 def clear_collection():
     global _DEFAULT_COLLECTION
     _DEFAULT_COLLECTION.clear()
