@@ -20,7 +20,6 @@
 
 # Quickstart
 
-
 First, install `ticktock`:
 ```
 pip install py-ticktock
@@ -36,17 +35,20 @@ clock = tick()
 clock.tock()
 ```
 
-This will print:
+This will print the timing of the lines 3 to 5 in your code as so:
 ```
 ⏱️ [3-5] 50us count=1
 ```
-Indicating that lines 3-5 took <50us to run.
 
-You can use `ticktock` arbitrarily deep inside you Python code and still get meaningful timing information.
+# How is `ticktock` different?
 
-When the timer is called multiple times (for example within a loop), measured times will be aggregated and printed periodically (every 2 seconds by default).
+`ticktock` becomes really useful when you are trying to time code that is called multiple times. 
 
-As a result, the following code:
+Rather than printing a new line each time the code is visited, `ticktock` computes tracks the times and *only prints them every couple of seconds*. 
+
+`ticktock`'s output is **compact and readable**, regardless of how many times you run through the code you are timing, or where this code is.
+
+As an example, the following code:
 
 ```python
 from ticktock import tick
@@ -57,29 +59,14 @@ for _ in range(1000):
     clock.tock()
 ```
 
-Will output:
+Will result in a *single, continuously updated line of output* showing you the average time and how many times it was called so far:
 ```
 ⏱️ [4-6] 50us count=1000
 ```
 
-`ticktock` acts as a context manager to track the timing of a chunk of code:
+# Documentation
 
-```python
-from ticktock import ticktock
+Checkout the [documentation](https://victorbenichoux.github.io/ticktock/) for a complete manual.
 
-with ticktock():
-    time.sleep(1)
-```
-
-Or as a decorator:
-
-```python
-from ticktock import ticktock
-
-@ticktock
-def f():
-    time.sleep(1)
-```
-
-Checkout the [documentation](https://victorbenichoux.github.io/ticktock/) for a complete manual!
+`ticktock` is actively being developed, be sure to submit [issues](https://github.com/victorbenichoux/ticktock/issues) or [pull requests](https://github.com/victorbenichoux/ticktock/pulls) with ideas!
 
