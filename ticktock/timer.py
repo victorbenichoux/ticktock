@@ -8,27 +8,9 @@ from typing import Callable, Dict, Optional, Tuple
 
 from ticktock.data import AggregateTimes, ClockData
 from ticktock.renderers import AbstractRenderer, StandardRenderer
-from ticktock.utils import value_from_env
+from ticktock.utils import get_frame_info, value_from_env
 
 logger = logging.getLogger("ticktock.timer")
-
-
-def get_frame_info(level: int = 1) -> Tuple[str, int]:
-    frame = inspect.currentframe()
-    if frame:
-        for _ in range(level + 1):
-            if not frame:
-                return "<no frame info>", -1
-            frame = frame.f_back
-        if not frame:
-            return "<no frame info>", -1
-        return (
-            frame.f_code.co_filename,
-            frame.f_lineno,
-        )
-    else:
-        return "<no frame info>", -1
-
 
 _ALL_COLLECTIONS = []
 

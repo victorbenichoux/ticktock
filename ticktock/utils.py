@@ -1,4 +1,6 @@
+import inspect
 import os
+from typing import Tuple
 
 time_factors = [
     (24 * 60 * 60 * 1e9, "d"),
@@ -29,3 +31,20 @@ def value_from_env(env_var: str, default):
     if env_var in os.environ:
         return type(default)(os.environ[env_var])
     return default
+
+
+def get_frame_info(level: int = 1) -> Tuple[str, int]:
+    frame = inspect.currentframe()
+    if frame:
+        for _ in range(level + 1):
+            if not frame:
+                return "<no frame info>", -1
+            frame = frame.f_back
+        if not frame:
+            return "<no frame info>", -1
+        return (
+            frame.f_code.co_filename,
+            frame.f_lineno,
+        )
+    else:
+        return "<no frame info>", -1
