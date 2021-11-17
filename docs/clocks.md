@@ -1,5 +1,69 @@
 
 The most important objects in `ticktock` are clocks, which record timing.
+## `tick` and `Clock`
+
+### Creating clocks with `tick`
+
+The normal way to initialize a `Clock` is to use the `tick` method:
+
+```python
+from ticktock import tick
+
+clock = tick()
+```
+
+Which returns an instance of `Clock`. Calling the `tock` method of the `Clock` will record the time and return the elapsed time interval:
+
+```
+time_interval = clock.tock()
+```
+
+!!! info
+    By default, `ticktock` return time intervals in nanoseconds, to change this change the [timer function](#timer-function).
+
+
+### `tick` and `Clock` instances
+
+An important feature of `ticktock` is that any call to `tick` will return *the same instance* of a clock. This is because `Clock` instances are identified by *where they are defined*:
+
+```python
+from ticktock import tick
+
+for _ in range(10):
+    clock = tick()
+    print(id(clock))  # will print the *same* value
+```
+
+??? note
+
+    Normally, instances of objects are different everytime they are created:
+
+    ```python
+    from ticktock import tick
+
+    class A:
+        pass
+
+    for _ in range(10):
+        instance = A()
+        print(id(instance))  # will print different values
+    ```
+
+    Whenever a `Clock` is created with `tick`, `ticktock` will inspect the calling frame to determine which line in the code is being run. 
+
+A consequence is that you can redefine and discard `clocks` as you wish. 
+
+For example, the following code creates and tracks *two clocks*: one starting at line 3, and finishing at line 4, and the other one starting at line 6 and finishing at line 7.
+
+``` python linenums="1"
+from ticktock import tick
+
+clock = tick()
+clock.tock()
+
+clock = tick()
+clock.tock()
+```
 
 ## Clocks
 
@@ -21,22 +85,6 @@ clock = Clock("some_name")
 Or its parent `ClockCollection`:
 ```python
 clock = Clock("some_name", collection=my_collection)
-```
-
-### `tick` and `tock` recording
-
-Whenever a `Clock` is created, and when `tock` is called, `ticktock` will inspect the calling frame to determine which line in the code is being run. 
-
-This allows one to redefine and discard `clocks`. For example, the following code creates and tracks *two separate clocks*: one starting at line 3, and finishing at line 4, and the other one starting at line 6 and finishing at line 7.
-
-```python
-from ticktock import tick
-
-clock = tick()
-clock.tock()
-
-clock = tick()
-clock.tock()
 ```
 
 ### timer function
