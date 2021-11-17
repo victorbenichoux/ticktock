@@ -52,11 +52,11 @@ def test_tick_identity(name_tick, fresh_clock_collection):
         (None, None, None, 2),
         ("ok", None, None, 2),
         ("ok", "boomer", None, 2),
-        ("ok", "boomer", "boomer", 1),
+        ("ok", "boomer", "boomer", 2),
         ("ok", "boomer", "boomer_2", 2),
         (None, "ok", None, 2),
         (None, "ok", "boomer", 2),
-        (None, "ok", "ok", 1),
+        (None, "ok", "ok", 2),
         ("ok", None, "boomer", 2),
     ],
 )

@@ -1,10 +1,13 @@
 import math
 from dataclasses import dataclass
+from typing import Union
+
+from ticktock.utils import TockName
 
 
 @dataclass
 class AggregateTimes:
-    tock_name: str
+    tock_name: Union[str, TockName]
     tock_filename: str
     tock_line: int
 
