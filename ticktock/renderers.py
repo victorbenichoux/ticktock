@@ -166,7 +166,7 @@ class LoggingRenderer(AbstractRenderer):
                 self._log(
                     "clock",
                     tick_name=clock.tick_name,
-                    tock_name=clock.tick_name,
+                    tock_name=times.tock_name,
                     mean=times.avg_time_ns * 1e9,
                     std=times.std_time_ns * 1e9,
                     min=times.min_time_ns * 1e9,
