@@ -189,7 +189,7 @@ class Clock:
             )
 
             self.collection.update(force=True)
-        return tock_time_ns
+        return tock_time_ns - self._tick_time_ns
 
     def enable(self):
         self._enabled = True
