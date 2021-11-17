@@ -124,7 +124,7 @@ clock.tock("second_tock")
 
 ### Aggregate times attribute
 
-The `Clock` object maintains a list of dataclasses with the current values of the last measured times for each of the `Clock`'s `tock`s in `Clock.aggregate_times`.
+The `Clock` object maintains a list of dataclasses with the current values of the last measured times for each of the `Clock`'s `tock`s in `Clock.times`.
 
 Each item in the list has the following attributes, that are updated everytime a `tock` is performed on the clock. All time values are in nanoseconds:
 

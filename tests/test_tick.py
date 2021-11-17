@@ -10,10 +10,10 @@ def test_tick_simple(fresh_clock_collection):
 
     assert len(fresh_clock_collection.clocks) == 1
     clock = next(iter(fresh_clock_collection.clocks.values()))
-    assert len(clock.aggregate_times) == 1
+    assert len(clock.times) == 1
 
     t.tock()
-    assert len(clock.aggregate_times) == 2
+    assert len(clock.times) == 2
 
 
 def test_tick_clear(fresh_clock_collection):
@@ -69,7 +69,7 @@ def test_tick_name(
 
     assert len(fresh_clock_collection.clocks) == 1
     clock = next(iter(fresh_clock_collection.clocks.values()))
-    assert len(clock.aggregate_times) == num_times
+    assert len(clock.times) == num_times
 
 
 def test_tick_simple_in_function(fresh_clock_collection):
@@ -82,7 +82,7 @@ def test_tick_simple_in_function(fresh_clock_collection):
 
     assert len(fresh_clock_collection.clocks) == 1
     clock = next(iter(fresh_clock_collection.clocks.values()))
-    assert len(clock.aggregate_times) == 1
+    assert len(clock.times) == 1
 
     def f2():
         t = tick(collection=fresh_clock_collection)
@@ -119,15 +119,15 @@ def test_collection_disabled(fresh_clock_collection, incremental_timer):
     assert v is None
 
     assert clock._tick_time_ns is None
-    assert len(list(clock.aggregate_times.values())) == 0
-    assert len(list(clock.aggregate_times.values())) == 0
+    assert len(list(clock.times.values())) == 0
+    assert len(list(clock.times.values())) == 0
 
     fresh_clock_collection.enable()
     assert fresh_clock_collection._enabled
     assert clock._enabled
     clock.tick()
     clock.tock()
-    assert len(list(clock.aggregate_times.values())) == 1
+    assert len(list(clock.times.values())) == 1
 
     clock.disable()
     assert not clock._enabled

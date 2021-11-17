@@ -45,7 +45,7 @@ class ClockCollection:
                         tick_name=clock.tick_name,
                         tick_filename=clock.tick_filename,
                         tick_line=clock.tick_line,
-                        times=clock.aggregate_times,
+                        times=clock.times,
                     )
                     for clock in self.clocks.values()
                 ]
@@ -145,7 +145,7 @@ class Clock:
         else:
             self.tick_name = name
 
-        self.aggregate_times: Dict[str, AggregateTimes] = {}
+        self.times: Dict[str, AggregateTimes] = {}
 
         self.collection.clocks[self._tick_id] = self
 
@@ -173,12 +173,12 @@ class Clock:
         if self._tick_time_ns is None:
             raise ValueError(f"Clock {self.tick_name} was not ticked.")
 
-        if tock_id in self.aggregate_times:
-            self.aggregate_times[tock_id].update(tock_time_ns, self._tick_time_ns)
+        if tock_id in self.times:
+            self.times[tock_id].update(tock_time_ns, self._tick_time_ns)
             self.collection.update(force=False)
         else:
             dt = tock_time_ns - self._tick_time_ns
-            self.aggregate_times[tock_id] = AggregateTimes(
+            self.times[tock_id] = AggregateTimes(
                 tock_name=tock_name,
                 tock_line=tock_line,
                 tock_filename=tock_filename,
