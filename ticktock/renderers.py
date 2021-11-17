@@ -124,7 +124,7 @@ class StandardRenderer(AbstractRenderer):
         for times in clock.times.values():
             yield (
                 ""
-                + self._format.format(
+                + (clock._format or self._format).format(
                     **{
                         key: format_ns_interval(
                             TIME_FIELDS[key](times), max_terms=self._max_terms

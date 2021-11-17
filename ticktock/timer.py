@@ -195,6 +195,7 @@ class Clock:
     @staticmethod
     def _get_or_create_clock(
         name: str = None,
+        format: Optional[str] = None,
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
         timer: Optional[Callable[[], int]] = None,
@@ -210,6 +211,7 @@ class Clock:
         else:
             return Clock(
                 name=name,
+                format=format,
                 collection=collection,
                 tick_time_ns=tick_time_ns,
                 tick_frame_info=tick_frame_info,
@@ -219,12 +221,17 @@ class Clock:
 
 def tick(
     name: str = None,
+    format: Optional[str] = None,
     collection: Optional[ClockCollection] = None,
     tick_time_ns: Optional[int] = None,
     timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
     clock = Clock._get_or_create_clock(
-        name=name, collection=collection, tick_time_ns=tick_time_ns, timer=timer
+        name=name,
+        format=format,
+        collection=collection,
+        tick_time_ns=tick_time_ns,
+        timer=timer,
     )
     clock.tick()
     return clock
