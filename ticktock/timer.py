@@ -122,10 +122,12 @@ class Clock:
         tick_time_ns: Optional[int] = None,
         tick_frame_info: Optional[Tuple[str, int]] = None,
         timer: Optional[Callable[[], int]] = None,
+        format: Optional[str] = None,
         enabled: Optional[bool] = None,
     ) -> None:
         global _DEFAULT_COLLECTION
         self._enabled = enabled
+        self._format = format
         if self._enabled is None:
             self._enabled = not value_from_env("TICKTOCK_DISABLE", False)
 
