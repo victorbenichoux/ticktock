@@ -2,10 +2,12 @@ import abc
 import logging
 import sys
 from string import Formatter
-from typing import Callable, Iterable, List, Optional, TextIO
+from typing import TYPE_CHECKING, Callable, Iterable, List, Optional, TextIO
 
-from ticktock.data import ClockData
 from ticktock.utils import format_ns_interval, value_from_env
+
+if TYPE_CHECKING:
+    from ticktock.timer import Clock
 
 try:
     import tqdm
@@ -44,7 +46,7 @@ FIELDS = {
 
 
 class AbstractRenderer(abc.ABC):
-    def render(self, render_data: List[ClockData]) -> None:
+    def render(self, render_data: List["Clock"]) -> None:
         ...
 
 
@@ -93,7 +95,7 @@ class StandardRenderer(AbstractRenderer):
                 raise ValueError(f"Field {field_name} unknown in format string")
         self._has_printed = 0
 
-    def render(self, render_data: List[ClockData]) -> None:
+    def render(self, render_data: List["Clock"]) -> None:
         logger.debug("Rendering clock format={self._format}")
         ls: List[str] = []
         for clock_data in render_data:
@@ -118,7 +120,7 @@ class StandardRenderer(AbstractRenderer):
             self._out.flush()
         self._has_printed = len(ls)
 
-    def render_times(self, clock_data: ClockData) -> Iterable[str]:
+    def render_times(self, clock_data: "Clock") -> Iterable[str]:
         for times in clock_data.times.values():
             yield (
                 ""
@@ -160,7 +162,7 @@ class LoggingRenderer(AbstractRenderer):
 
         self._log = _log
 
-    def render(self, render_data: List[ClockData]) -> None:
+    def render(self, render_data: List["Clock"]) -> None:
         for clock_data in render_data:
             for times in clock_data.times.values():
                 self._log(

@@ -6,7 +6,7 @@ import time
 import weakref
 from typing import Callable, Dict, Optional, Tuple
 
-from ticktock.data import AggregateTimes, ClockData
+from ticktock.data import AggregateTimes
 from ticktock.renderers import AbstractRenderer, StandardRenderer
 from ticktock.utils import get_frame_info, value_from_env
 
@@ -39,17 +39,7 @@ class ClockCollection:
                 or time.perf_counter() - self._last_refresh_time_s > self._period
             )
         ):
-            self.renderer.render(
-                [
-                    ClockData(
-                        tick_name=clock.tick_name,
-                        tick_filename=clock.tick_filename,
-                        tick_line=clock.tick_line,
-                        times=clock.times,
-                    )
-                    for clock in self.clocks.values()
-                ]
-            )
+            self.renderer.render([clock for clock in self.clocks.values()])
             self._last_refresh_time_s = time.perf_counter()
 
     def clear(self):
