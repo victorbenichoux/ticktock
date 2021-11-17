@@ -4,9 +4,9 @@ from ticktock import tick
 def test_timing_incremental(fresh_clock_collection, incremental_timer):
     clock = tick(collection=fresh_clock_collection, timer=incremental_timer)
     v = clock.tock()
-    assert v == 2
+    assert v == 1
     v = clock.tock()
-    assert v == 3
+    assert v == 2
 
     assert clock._tick_time_ns == 1
     first_timer = list(clock.times.values())[0]
