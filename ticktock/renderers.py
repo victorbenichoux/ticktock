@@ -30,18 +30,18 @@ TIME_FIELDS = {
 }
 
 FIELDS = {
-    "count": lambda clock_data, times: times.n_periods,
-    "tick_name": lambda clock_data, times: clock_data.tick_name,
-    "tock_name": lambda clock_data, times: times.tock_name,
-    "tick_line": lambda clock_data, times: clock_data.tick_line,
-    "tock_line": lambda clock_data, times: times.tock_line,
-    "tick_filename": lambda clock_data, times: clock_data.tick_filename,
-    "tock_filename": lambda clock_data, times: times.tock_filename,
-    "avg_time_ns": lambda clock_data, times: times.avg_time_ns,
-    "std_time_ns": lambda clock_data, times: times.std_time_ns,
-    "min_time_ns": lambda clock_data, times: times.min_time_ns,
-    "max_time_ns": lambda clock_data, times: times.max_time_ns,
-    "last_time_ns": lambda clock_data, times: times.last_time_ns,
+    "count": lambda clock, times: times.n_periods,
+    "tick_name": lambda clock, times: clock.tick_name,
+    "tock_name": lambda clock, times: times.tock_name,
+    "tick_line": lambda clock, times: clock.tick_line,
+    "tock_line": lambda clock, times: times.tock_line,
+    "tick_filename": lambda clock, times: clock.tick_filename,
+    "tock_filename": lambda clock, times: times.tock_filename,
+    "avg_time_ns": lambda clock, times: times.avg_time_ns,
+    "std_time_ns": lambda clock, times: times.std_time_ns,
+    "min_time_ns": lambda clock, times: times.min_time_ns,
+    "max_time_ns": lambda clock, times: times.max_time_ns,
+    "last_time_ns": lambda clock, times: times.last_time_ns,
 }
 
 
@@ -98,8 +98,8 @@ class StandardRenderer(AbstractRenderer):
     def render(self, render_data: List["Clock"]) -> None:
         logger.debug("Rendering clock format={self._format}")
         ls: List[str] = []
-        for clock_data in render_data:
-            for line in self.render_times(clock_data):
+        for clock in render_data:
+            for line in self.render_times(clock):
                 ls.append(line)
         if has_tqdm:
             with tqdm.tqdm.external_write_mode(sys.stderr, nolock=True):
@@ -120,8 +120,8 @@ class StandardRenderer(AbstractRenderer):
             self._out.flush()
         self._has_printed = len(ls)
 
-    def render_times(self, clock_data: "Clock") -> Iterable[str]:
-        for times in clock_data.times.values():
+    def render_times(self, clock: "Clock") -> Iterable[str]:
+        for times in clock.times.values():
             yield (
                 ""
                 + self._format.format(
@@ -131,9 +131,7 @@ class StandardRenderer(AbstractRenderer):
                         )
                         for key in self._time_fields
                     },
-                    **{
-                        key: str(FIELDS[key](clock_data, times)) for key in self._fields
-                    },
+                    **{key: str(FIELDS[key](clock, times)) for key in self._fields},
                 )
             )
 
@@ -163,12 +161,12 @@ class LoggingRenderer(AbstractRenderer):
         self._log = _log
 
     def render(self, render_data: List["Clock"]) -> None:
-        for clock_data in render_data:
-            for times in clock_data.times.values():
+        for clock in render_data:
+            for times in clock.times.values():
                 self._log(
                     "clock",
-                    tick_name=clock_data.tick_name,
-                    tock_name=clock_data.tick_name,
+                    tick_name=clock.tick_name,
+                    tock_name=clock.tick_name,
                     mean=times.avg_time_ns * 1e9,
                     std=times.std_time_ns * 1e9,
                     min=times.min_time_ns * 1e9,
