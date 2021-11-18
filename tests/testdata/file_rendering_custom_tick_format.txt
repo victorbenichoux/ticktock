@@ -1,1 +1,3 @@
 start
+start
+⏱️ [start-noformat-stop-noformat] 1ns count=1

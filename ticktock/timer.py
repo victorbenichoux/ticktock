@@ -57,13 +57,17 @@ class ClockCollection:
         self._enabled = False
 
     def set_format(
-        self, format: str = None, max_terms: int = None, no_update: bool = None
+        self,
+        format: str = None,
+        tick_id: str = None,
+        max_terms: int = None,
+        no_update: bool = None,
     ):
         if not isinstance(self.renderer, StandardRenderer):
             logger.warn("Setting format of a renderer that does not support format")
             return
         if format is not None:
-            self.renderer.set_format(format)
+            self.renderer.set_format(format, tick_id=tick_id)
         if max_terms is not None:
             self.renderer._max_terms = max_terms
         if no_update is not None:
@@ -118,13 +122,10 @@ class Clock:
     ) -> None:
         global _DEFAULT_COLLECTION
         self._enabled = enabled
-        self._format = format
         if self._enabled is None:
             self._enabled = not value_from_env("TICKTOCK_DISABLE", False)
 
         self.timer = timer or time.perf_counter_ns
-
-        self.collection: ClockCollection = collection or _DEFAULT_COLLECTION
 
         self.tick_filename, self.tick_line = frame_info or get_frame_info(1)
         self._tick_id = name or f"{self.tick_filename}:{self.tick_line}"
@@ -137,10 +138,12 @@ class Clock:
             self.tick_name = name
 
         self.times: Dict[str, AggregateTimes] = {}
-
-        self.collection.clocks[self._tick_id] = self
-
         self._tick_time_ns: Optional[int] = tick_time_ns
+
+        self.collection: ClockCollection = collection or _DEFAULT_COLLECTION
+        self.collection.clocks[self._tick_id] = self
+        if format:
+            self.collection.set_format(format, tick_id=self._tick_id)
 
     def tick(self) -> Optional[float]:
         if not self.is_enabled():

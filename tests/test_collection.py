@@ -20,10 +20,10 @@ def test_env_set_period(fresh_configuration, monkeypatch):
 
 def test_env_set_renderer_format(fresh_configuration, monkeypatch):
     renderer = StandardRenderer()
-    assert renderer._format == FORMATS["short"]
+    assert renderer._formats[None] == FORMATS["short"]
 
     renderer = StandardRenderer(format="long")
-    assert renderer._format == FORMATS["long"]
+    assert renderer._formats[None] == FORMATS["long"]
 
 
 def test_set_enable_disable(fresh_configuration, monkeypatch):
