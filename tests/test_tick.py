@@ -3,7 +3,6 @@ import pytest
 from ticktock import collection as collection_mod
 from ticktock.clocks import Clock, tick
 from ticktock.collection import clear_collection
-from ticktock.timers import ticktock
 
 
 def test_tick_simple(fresh_clock_collection):
@@ -99,12 +98,6 @@ def test_clock_no_tick(fresh_clock_collection):
     clock = Clock()
     with pytest.raises(ValueError):
         clock.tock()
-
-
-def test_contextmanager(fresh_clock_collection):
-    with ticktock(collection=fresh_clock_collection):
-        pass
-    assert len(fresh_clock_collection.clocks) == 1
 
 
 def test_collection_disabled(fresh_clock_collection, incremental_timer):

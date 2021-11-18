@@ -46,7 +46,10 @@ TIME_FIELDS = {
 
 def name_field_fn(clock: "Clock", times: AggregateTimes):
     if times.tock_name == TockName.DECORATOR:
-        return f"{clock.tick_name}"
+        return clock.tick_name
+    if times.tock_name == TockName.CONTEXTMANAGER:
+        if clock.tick_name:
+            return clock.tick_name
     if clock.tick_name:
         if times.tock_name:
             return f"{clock.tick_name}-{times.tock_name}"
@@ -55,7 +58,7 @@ def name_field_fn(clock: "Clock", times: AggregateTimes):
     else:
         if os.path.exists(clock.tick_filename):
             tick_name = os.path.basename(clock.tick_filename)
-        if times.tock_name:
+        if not isinstance(times.tock_name, TockName):
             return f"{tick_name}-{times.tock_name}"
         else:
             return f"{tick_name}:{clock.tick_line}-{times.tock_line}"

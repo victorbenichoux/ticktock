@@ -53,3 +53,4 @@ def get_frame_info(level: int = 1) -> Tuple[str, int]:
 
 class TockName(Enum):
     DECORATOR = 1
+    CONTEXTMANAGER = 2

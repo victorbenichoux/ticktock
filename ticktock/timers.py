@@ -38,7 +38,7 @@ class ticktock:
         )
 
     def __exit__(self, *_):
-        self.clock.tock()
+        self.clock.tock(name=TockName.CONTEXTMANAGER)
 
     def __call__(self, *args, **kwargs):
         def _decorate(func):
