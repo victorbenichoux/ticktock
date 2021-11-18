@@ -1,6 +1,7 @@
-from ticktock import timer
+from ticktock import collection as collection_mod
+from ticktock.clocks import tick
+from ticktock.collection import ClockCollection, disable, enable, set_collection
 from ticktock.std import FORMATS, StandardRenderer
-from ticktock.timer import ClockCollection, disable, enable, set_collection, tick
 
 
 def test_env_set_period(fresh_configuration, monkeypatch):
@@ -12,7 +13,7 @@ def test_env_set_period(fresh_configuration, monkeypatch):
     assert collection._period == 1
 
     set_collection(collection)
-    assert timer._DEFAULT_COLLECTION._period == 1
+    assert collection_mod._DEFAULT_COLLECTION._period == 1
 
     clock = tick()
     assert clock.collection._period == 1
@@ -39,7 +40,7 @@ def test_set_enable_disable(fresh_configuration, monkeypatch):
     assert collection._enabled
 
     disable()
-    assert not timer._DEFAULT_COLLECTION._enabled
+    assert not collection_mod._DEFAULT_COLLECTION._enabled
 
     enable()
-    assert timer._DEFAULT_COLLECTION._enabled
+    assert collection_mod._DEFAULT_COLLECTION._enabled

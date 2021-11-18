@@ -21,7 +21,7 @@ from ticktock.renderers import AbstractRenderer
 from ticktock.utils import TockName, format_ns_interval
 
 if TYPE_CHECKING:
-    from ticktock.timer import Clock
+    from ticktock.clocks import Clock
 
 try:
     import tqdm

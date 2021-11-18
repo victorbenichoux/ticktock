@@ -7,9 +7,10 @@ import tempfile
 import pytest
 
 from tests import TEST_DIR
+from ticktock.clocks import tick
+from ticktock.collection import ClockCollection, set_collection, set_format
 from ticktock.renderers import LoggingRenderer
 from ticktock.std import StandardRenderer
-from ticktock.timer import ClockCollection, set_collection, set_format, tick
 
 
 def compare_text(truth_fn, result_fn):

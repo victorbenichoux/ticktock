@@ -1,5 +1,5 @@
-from ticktock import ticktock
-from ticktock.timer import ClockCollection, set_collection
+from ticktock.collection import ClockCollection, set_collection
+from ticktock.timers import ticktock
 
 
 def test_decorator_with_arguments(fresh_clock_collection):

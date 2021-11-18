@@ -1,6 +1,6 @@
 import pytest
 
-from ticktock.timer import ClockCollection
+from ticktock.collection import ClockCollection
 
 
 @pytest.fixture(scope="function")

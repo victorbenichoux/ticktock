@@ -3,7 +3,7 @@ import logging
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from ticktock.timer import Clock
+    from ticktock.clocks import Clock
 
 
 logger = logging.getLogger("ticktock.renderers")
