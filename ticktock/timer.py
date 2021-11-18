@@ -7,7 +7,8 @@ import weakref
 from typing import Callable, Dict, Optional, Tuple, Union
 
 from ticktock.data import AggregateTimes
-from ticktock.renderers import AbstractRenderer, StandardRenderer
+from ticktock.renderers import AbstractRenderer
+from ticktock.std import StandardRenderer
 from ticktock.utils import TockName, get_frame_info, value_from_env
 
 logger = logging.getLogger("ticktock.timer")

@@ -7,7 +7,8 @@ import tempfile
 import pytest
 
 from tests import TEST_DIR
-from ticktock.renderers import LoggingRenderer, StandardRenderer
+from ticktock.renderers import LoggingRenderer
+from ticktock.std import StandardRenderer
 from ticktock.timer import ClockCollection, set_collection, set_format, tick
 
 

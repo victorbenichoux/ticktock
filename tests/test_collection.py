@@ -1,5 +1,5 @@
 from ticktock import timer
-from ticktock.renderers import FORMATS, StandardRenderer
+from ticktock.std import FORMATS, StandardRenderer
 from ticktock.timer import ClockCollection, disable, enable, set_collection, tick
 
 
