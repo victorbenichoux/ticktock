@@ -22,30 +22,32 @@ class Clock:
         collection: Optional["ClockCollection"] = None,
         frame_info: Optional[Tuple[str, int]] = None,
     ) -> None:
+        self.tick_filename, self.tick_line = frame_info or get_frame_info(1)
+        self._tick_id = f"{self.tick_filename}:{self.tick_line}"
+
+        self.tick_name = name
+
+        self._timer = timer or time.perf_counter_ns
+        self._tick_time_ns: Optional[int] = None
+
         self._enabled = enabled
         if self._enabled is None:
             self._enabled = not value_from_env("TICKTOCK_DISABLE", False)
 
-        self.timer = timer or time.perf_counter_ns
-
-        self.tick_filename, self.tick_line = frame_info or get_frame_info(1)
-        self._tick_id = f"{self.tick_filename}:{self.tick_line}"
-        self.tick_name = name
-
         self.times: Dict[str, AggregateTimes] = {}
-        self._tick_time_ns: Optional[int] = None
 
         self.collection: "ClockCollection" = (
             collection or collection_module._DEFAULT_COLLECTION
         )
         self.collection.clocks[self._tick_id] = self
+
         if format:
             self.collection.set_format(format, tick_id=self._tick_id)
 
     def tick(self) -> Optional[float]:
         if not self.is_enabled():
             return None
-        self._tick_time_ns = self.timer()
+        self._tick_time_ns = self._timer()
         return self._tick_time_ns
 
     def tock(
@@ -59,7 +61,7 @@ class Clock:
         tock_id = f"{tock_filename}:{tock_line}"
         tock_name = name if name is not None else str(tock_line)
 
-        tock_time_ns = self.timer()
+        tock_time_ns = self._timer()
 
         if self._tick_time_ns is None:
             raise ValueError(f"Clock {self.tick_name} was not ticked.")
