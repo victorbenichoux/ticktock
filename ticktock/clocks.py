@@ -56,19 +56,16 @@ class Clock:
     ) -> Optional[float]:
         if not self.is_enabled():
             return None
-        tock_filename, tock_line = frame_info or get_frame_info(1)
-        tock_id = f"{tock_filename}:{tock_line}"
-
         tock_time_ns = self._timer()
-
+        tock_id = "{}:{}".format(*(frame_info or get_frame_info(1)))
         if self._tick_time_ns is None:
             raise ValueError(f"Clock {self.tick_name} was not ticked.")
-
         if tock_id in self.times:
             self.times[tock_id].update(tock_time_ns, self._tick_time_ns)
             self.collection.update(force=False)
         else:
             dt = tock_time_ns - self._tick_time_ns
+            tock_filename, tock_line = frame_info or get_frame_info(1)
             self.times[tock_id] = AggregateTimes(
                 tock_name=name,
                 tock_line=tock_line,
@@ -78,7 +75,6 @@ class Clock:
                 min_time_ns=dt,
                 max_time_ns=dt,
             )
-
             self.collection.update(force=True)
         return tock_time_ns - self._tick_time_ns
 
