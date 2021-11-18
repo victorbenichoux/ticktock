@@ -44,11 +44,10 @@ class Clock:
         if format:
             self.collection.set_format(format, tick_id=self._tick_id)
 
-    def tick(self) -> Optional[float]:
-        if not self.is_enabled():
-            return None
-        self._tick_time_ns = self._timer()
-        return self._tick_time_ns
+    def tick(self) -> "Clock":
+        if self.is_enabled():
+            self._tick_time_ns = self._timer()
+        return self
 
     def tock(
         self,
@@ -103,18 +102,14 @@ def tick(
     frame_info: Optional[Tuple[str, int]] = None,
 ) -> Clock:
     collection = collection or collection_module._DEFAULT_COLLECTION
-    frame_info = frame_info or get_frame_info(1)
-    filename, lineno = frame_info
-    if f"{filename}:{lineno}" in collection.clocks:
-        clock = collection.clocks[f"{filename}:{lineno}"]
-    else:
-        clock = Clock(
-            name=name,
-            format=format,
-            collection=collection,
-            frame_info=frame_info,
-            timer=timer,
-            enabled=enabled,
-        )
-    clock.tick()
-    return clock
+    tick_id = "{}:{}".format(*(frame_info or get_frame_info(1)))
+    if tick_id in collection.clocks:
+        return collection.clocks[tick_id].tick()
+    return Clock(
+        name=name,
+        format=format,
+        collection=collection,
+        frame_info=frame_info or get_frame_info(1),
+        timer=timer,
+        enabled=enabled,
+    ).tick()
