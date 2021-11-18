@@ -12,9 +12,9 @@ def test_decorator_with_arguments(fresh_clock_collection):
     clock = next(iter(fresh_clock_collection.clocks.values()))
     clock_times = list(clock.times.values())
     assert len(clock_times) == 1
-    assert clock_times[0].n_periods == 1
+    assert clock_times[0].count == 1
     assert f(0.1) == 0.1
-    assert clock_times[0].n_periods == 2
+    assert clock_times[0].count == 2
 
 
 def test_decorator_no_arguments(fresh_clock_collection):
@@ -29,7 +29,7 @@ def test_decorator_no_arguments(fresh_clock_collection):
     clock = next(iter(fresh_clock_collection.clocks.values()))
     clock_times = list(clock.times.values())
     assert len(clock_times) == 1
-    assert clock_times[0].n_periods == 1
+    assert clock_times[0].count == 1
     assert f(0.1) == 0.1
-    assert clock_times[0].n_periods == 2
+    assert clock_times[0].count == 2
     set_collection(ClockCollection())

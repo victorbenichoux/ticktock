@@ -72,7 +72,7 @@ CONSTANT_FIELDS = {
 }
 
 RAW_FIELDS = {
-    "count": lambda clock, times: times.n_periods,
+    "count": lambda clock, times: times.count,
     "avg_time_ns": lambda clock, times: times.avg_time_ns,
     "std_time_ns": lambda clock, times: times.std_time_ns,
     "min_time_ns": lambda clock, times: times.min_time_ns,

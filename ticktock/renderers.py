@@ -49,5 +49,5 @@ class LoggingRenderer(AbstractRenderer):
                     std=times.std_time_ns * 1e9,
                     min=times.min_time_ns * 1e9,
                     max=times.max_time_ns * 1e9,
-                    count=times.n_periods,
+                    count=times.count,
                 )
