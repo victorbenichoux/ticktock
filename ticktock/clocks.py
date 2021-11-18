@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 from typing import TYPE_CHECKING, Callable, Dict, Optional, Tuple, Union
 
@@ -31,14 +30,8 @@ class Clock:
         self.timer = timer or time.perf_counter_ns
 
         self.tick_filename, self.tick_line = frame_info or get_frame_info(1)
-        self._tick_id = name or f"{self.tick_filename}:{self.tick_line}"
-        if not name:
-            if os.path.exists(self.tick_filename):
-                self.tick_name = os.path.basename(self._tick_id)
-            else:
-                self.tick_name = f"{self.tick_line}"
-        else:
-            self.tick_name = name
+        self._tick_id = f"{self.tick_filename}:{self.tick_line}"
+        self.tick_name = name
 
         self.times: Dict[str, AggregateTimes] = {}
         self._tick_time_ns: Optional[int] = tick_time_ns
