@@ -15,7 +15,7 @@ logger = logging.getLogger("ticktock.clocks")
 class Clock:
     def __init__(
         self,
-        name: str = None,
+        name: str = "",
         format: Optional[str] = None,
         timer: Optional[Callable[[], int]] = None,
         enabled: Optional[bool] = None,
@@ -51,14 +51,13 @@ class Clock:
 
     def tock(
         self,
-        name: Optional[Union[str, TockName]] = None,
+        name: Union[str, TockName] = "",
         frame_info: Optional[Tuple[str, int]] = None,
     ) -> Optional[float]:
         if not self.is_enabled():
             return None
         tock_filename, tock_line = frame_info or get_frame_info(1)
         tock_id = f"{tock_filename}:{tock_line}"
-        tock_name = name if name is not None else str(tock_line)
 
         tock_time_ns = self._timer()
 
@@ -71,7 +70,7 @@ class Clock:
         else:
             dt = tock_time_ns - self._tick_time_ns
             self.times[tock_id] = AggregateTimes(
-                tock_name=tock_name,
+                tock_name=name,
                 tock_line=tock_line,
                 tock_filename=tock_filename,
                 last_time_ns=dt,
@@ -94,7 +93,7 @@ class Clock:
 
 
 def tick(
-    name: str = None,
+    name: str = "",
     format: Optional[str] = None,
     timer: Optional[Callable[[], int]] = None,
     enabled: Optional[bool] = None,
