@@ -20,7 +20,24 @@ Then, use the `tock` method to signal the end of the measurement for this clock:
 t.tock()
 ```
 
-!!! info
+???+ tip "Naming"
+
+    By default, `tick` creates a clock named after *where* it is first created (e.g. `path/to/the/code.py:line_number`), and `tock` is named after the line in which it is called. 
+
+    As a result, a `Clock` is typically renderer as `path/to/the/code.py:start-stop` where `start` and `stop` are the line numbers of the `tick` and `tock`.
+
+    You can name the beginning and end of timers:
+
+    ```python
+    clock = tick("beginning")
+    clock.tock("end")
+    ```
+
+    Which will then be displayed as `⏱️ [beginning-end] 1ms count=1`
+
+
+??? info "Clock identity"
+
     `tick` and `tock` function by recording the specific line in your code that they are created at. 
     
     This allows `ticktock` to aggregate times together although the `Clock` is redefined everytime the code is visited:
@@ -44,6 +61,14 @@ with ticktock():
     time.sleep(1)
 ```
 
+???+ tip "Naming"
+    By default the name of the clock with a context manager is the filename and line numbers, but you can also provide a name to the context manager:
+
+    ```python
+    with ticktock(name="some name"):
+        pass
+    ```
+
 ### Function decorator
 
 `ticktock` doubles as a decorator that tracks the timing of each call to a function:
@@ -58,29 +83,27 @@ def f():
 f()
 ```
 
-## Timer names
+???+ note "Naming"
+    Naming `ticktock` function decorators
+    By default the name of the clock with a function decorator is the name of the function:
 
-By default, `tick` creates a clock named after *where* it is first created (e.g. `path/to/the/code.py:line_number`), and `tock` is named after the line in which it is called. 
+    ```python
+    @ticktock
+    def f():
+        pass
+    ```
 
-As a result, a `Clock` is typically renderer as `path/to/the/code.py:start-stop` where `start` and `stop` are the line numnbers of the `tick` and `tock`.
+    Will render as: `⏱️ [f] 1ms count=1`
 
+    You can also provide a name to the decorator
 
-### Explicit clock naming
+    ```python
+    @ticktock(name="some name")
+    def f():
+        pass
+    ```
 
-It is possible to explicitly name the beginning ("tick") and the end ("tock") of timers as so
-
-```python
-from ticktock import tick
-
-clock = tick("beginning")
-clock.tock("end")
-```
-
-Which will then be displayed as 
-
-```
-⏱️ [beginning-end] 1ms count=1
-```
+    Will render as: `⏱️ [some name] 1ms count=1`
 
 ### Multiple Clocks
 
@@ -100,18 +123,21 @@ for _ in range(1000):
 ```
 
 
-### Multiple Clock end times
+A clock can also have a multiple `tocks`, which will be displayed as different lines
 
-More subtlely, a clock can have a multiple `tocks`, which will be displayed as different lines
-
-```python
-for k in range(1000):
-    t = tick()
-    # do some work
+```python linenums="1"
+t = tick("start")
+time.sleep(1)
+if k % 2 == 1:
     time.sleep(1)
-    if k % 2 == 1:
-        time.sleep(1)
-        t.tock()
-    else:
-        t.tock()
+    t.tock("one")
+else:
+    t.tock("two")
+```
+
+Which will lead to two lines being renderered:
+
+```
+⏱️ [start-one] 1s count=1
+⏱️ [start-two] 2s count=1
 ```
