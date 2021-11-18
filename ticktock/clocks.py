@@ -101,32 +101,6 @@ class Clock:
     def is_enabled(self):
         return self._enabled and self.collection._enabled
 
-    @staticmethod
-    def _get_or_create_clock(
-        name: str = None,
-        format: Optional[str] = None,
-        collection: Optional["ClockCollection"] = None,
-        tick_time_ns: Optional[int] = None,
-        frame_info: Optional[Tuple[str, int]] = None,
-        timer: Optional[Callable[[], int]] = None,
-    ):
-        collection = collection or collection_module._DEFAULT_COLLECTION
-        frame_info = frame_info or get_frame_info(2)
-        filename, lineno = frame_info
-        if name and name in collection.clocks:
-            return collection.clocks[name]
-        elif f"{filename}:{lineno}" in collection.clocks:
-            return collection.clocks[f"{filename}:{lineno}"]
-        else:
-            return Clock(
-                name=name,
-                format=format,
-                collection=collection,
-                tick_time_ns=tick_time_ns,
-                frame_info=frame_info,
-                timer=timer,
-            )
-
 
 def tick(
     name: str = None,
@@ -135,14 +109,24 @@ def tick(
     tick_time_ns: Optional[int] = None,
     frame_info: Optional[Tuple[str, int]] = None,
     timer: Optional[Callable[[], int]] = None,
+    enabled: Optional[bool] = None,
 ) -> Clock:
-    clock = Clock._get_or_create_clock(
-        name=name,
-        format=format,
-        collection=collection,
-        tick_time_ns=tick_time_ns,
-        frame_info=frame_info,
-        timer=timer,
-    )
+    collection = collection or collection_module._DEFAULT_COLLECTION
+    frame_info = frame_info or get_frame_info(1)
+    filename, lineno = frame_info
+    if name and name in collection.clocks:
+        clock = collection.clocks[name]
+    elif f"{filename}:{lineno}" in collection.clocks:
+        clock = collection.clocks[f"{filename}:{lineno}"]
+    else:
+        clock = Clock(
+            name=name,
+            format=format,
+            collection=collection,
+            tick_time_ns=tick_time_ns,
+            frame_info=frame_info,
+            timer=timer,
+            enabled=enabled,
+        )
     clock.tick()
     return clock
