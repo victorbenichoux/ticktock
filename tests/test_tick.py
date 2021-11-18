@@ -1,7 +1,8 @@
 import pytest
 
-from ticktock import timer
-from ticktock.timer import Clock, clear_collection, tick, ticktock  # noqa: F401
+from ticktock import collection as collection_mod
+from ticktock.clocks import Clock, tick
+from ticktock.collection import clear_collection
 
 
 def test_tick_simple(fresh_clock_collection):
@@ -30,9 +31,9 @@ def test_tick_clear_default():
     t = tick()
     t.tock()
 
-    assert len(timer._DEFAULT_COLLECTION.clocks) == 1
+    assert len(collection_mod._DEFAULT_COLLECTION.clocks) == 1
     clear_collection()
-    assert len(timer._DEFAULT_COLLECTION.clocks) == 0
+    assert len(collection_mod._DEFAULT_COLLECTION.clocks) == 0
 
 
 @pytest.mark.parametrize("name_tick", [None, "ok"])
@@ -97,12 +98,6 @@ def test_clock_no_tick(fresh_clock_collection):
     clock = Clock()
     with pytest.raises(ValueError):
         clock.tock()
-
-
-def test_contextmanager(fresh_clock_collection):
-    with ticktock(collection=fresh_clock_collection):
-        pass
-    assert len(fresh_clock_collection.clocks) == 1
 
 
 def test_collection_disabled(fresh_clock_collection, incremental_timer):

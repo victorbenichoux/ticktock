@@ -7,8 +7,10 @@ import tempfile
 import pytest
 
 from tests import TEST_DIR
-from ticktock.renderers import LoggingRenderer, StandardRenderer
-from ticktock.timer import ClockCollection, set_collection, set_format, tick
+from ticktock.clocks import tick
+from ticktock.collection import ClockCollection, set_collection, set_format
+from ticktock.renderers import LoggingRenderer
+from ticktock.std import StandardRenderer
 
 
 def compare_text(truth_fn, result_fn):
@@ -122,6 +124,8 @@ def test_file_rendering_custom_tick_format(incremental_timer):
                     timer=incremental_timer,
                 )
                 t.tock("end")
+            t = tick("start-noformat", collection=collection, timer=incremental_timer)
+            t.tock("stop-noformat")
         compare_text(
             "file_rendering_custom_tick_format.txt",
             os.path.join(tmp_dir, "file_rendering_custom_tick_format.txt"),
@@ -133,7 +137,7 @@ def test_set_format(caplog):
     collection = ClockCollection(renderer=renderer)
     set_collection(collection)
     set_format("a format")
-    assert renderer._format == "a format"
+    assert renderer._formats[None] == "a format"
 
 
 def test_set_format_invalid_renderer(caplog):

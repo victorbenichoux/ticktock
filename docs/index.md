@@ -62,8 +62,3 @@ Will output:
 ```
 ⏱️ [4-6] 1ms count=1000
 ```
-
-
-## Customize rendering
-
-`ticktock` allows you to print out periodical information about the time tracked by its different clocks. By default, it is printed to `stdout`, but it is also possible to send log messages (see [Rendering](rendering.md)).

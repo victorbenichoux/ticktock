@@ -14,16 +14,12 @@ def test_timing_incremental(fresh_clock_collection, incremental_timer):
 
     assert first_timer.avg_time_ns == 1
     assert first_timer.std_time_ns == 0
-    assert first_timer.n_periods == 1
-    assert first_timer.last_tick_time_ns == 1
-    assert first_timer.last_tock_time_ns == 2
+    assert first_timer.count == 1
     assert first_timer.last_time_ns == 1
 
     assert second_timer.std_time_ns == 0
-    assert second_timer.n_periods == 1
+    assert second_timer.count == 1
     assert second_timer.avg_time_ns == 2
-    assert second_timer.last_tick_time_ns == 1
-    assert second_timer.last_tock_time_ns == 3
     assert second_timer.last_time_ns == 2
 
 
@@ -42,11 +38,11 @@ def test_timing_constant(fresh_clock_collection, constant_timer):
     assert first_timer.min_time_ns == 0
     assert first_timer.max_time_ns == 0
     assert first_timer.last_time_ns == 0
-    assert first_timer.n_periods == 10
+    assert first_timer.count == 10
 
     assert second_timer.avg_time_ns == 0
     assert second_timer.std_time_ns == 0
     assert second_timer.min_time_ns == 0
     assert second_timer.max_time_ns == 0
     assert second_timer.last_time_ns == 0
-    assert second_timer.n_periods == 10
+    assert second_timer.count == 10

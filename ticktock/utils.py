@@ -51,5 +51,6 @@ def get_frame_info(level: int = 1) -> Tuple[str, int]:
         return "<no frame info>", -1
 
 
-class TockName(Enum):
+class _TockName(Enum):
     DECORATOR = 1
+    CONTEXTMANAGER = 2
