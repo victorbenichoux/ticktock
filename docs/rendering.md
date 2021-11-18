@@ -15,7 +15,7 @@ Create your own `ClockCollection` with a custom renderer to customiwe the way `t
 Then, set it as the default collection so all your `tick`s and `tock`s are attached to it:
 
 ```python
-from ticktock.timer import ClockCollection, set_collection
+from ticktock.collection import ClockCollection, set_collection
 from ticktock import renderers
 
 collection = ClockCollection(renderer = renderers.StandardRenderer())
