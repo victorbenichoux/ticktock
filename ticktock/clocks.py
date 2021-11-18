@@ -73,8 +73,6 @@ class Clock:
                 tock_name=tock_name,
                 tock_line=tock_line,
                 tock_filename=tock_filename,
-                last_tick_time_ns=self._tick_time_ns,
-                last_tock_time_ns=tock_time_ns,
                 last_time_ns=dt,
                 avg_time_ns=dt,
                 min_time_ns=dt,

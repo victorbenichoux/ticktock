@@ -14,8 +14,6 @@ class AggregateTimes:
     avg_time_ns: float
     min_time_ns: float
     max_time_ns: float
-    last_tick_time_ns: float
-    last_tock_time_ns: float
     last_time_ns: float
     std_time_ns: float = 0
     m2_time_ns: float = 0
@@ -23,8 +21,6 @@ class AggregateTimes:
     n_periods: int = 1
 
     def update(self, tock_time_ns: int, tick_time_ns: int) -> None:
-        self.last_tock_time_ns = tock_time_ns
-        self.last_tick_time_ns = tick_time_ns
 
         self.last_time_ns = tock_time_ns - tick_time_ns
 
