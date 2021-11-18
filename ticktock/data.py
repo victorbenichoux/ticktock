@@ -1,11 +1,13 @@
 import math
 from dataclasses import dataclass
-from typing import Dict
+from typing import Union
+
+from ticktock.utils import TockName
 
 
 @dataclass
 class AggregateTimes:
-    tock_name: str
+    tock_name: Union[str, TockName]
     tock_filename: str
     tock_line: int
 
@@ -38,11 +40,3 @@ class AggregateTimes:
 
         if self.n_periods >= 2:
             self.std_time_ns = math.sqrt(self.m2_time_ns / (self.n_periods - 1))
-
-
-@dataclass
-class ClockData:
-    times: Dict[str, AggregateTimes]
-    tick_name: str
-    tick_filename: str
-    tick_line: int

@@ -105,6 +105,29 @@ def test_file_rendering_no_update(incremental_timer):
         )
 
 
+def test_file_rendering_custom_tick_format(incremental_timer):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_fn = os.path.join(tmp_dir, "file_rendering_custom_tick_format.txt")
+        with open(tmp_fn, mode="w", encoding="utf-8") as f:
+            collection = ClockCollection(
+                renderer=StandardRenderer(out=f),
+            )
+            set_collection(collection)
+            set_format(no_update=True)
+            for _ in range(10):
+                t = tick(
+                    name="start",
+                    format="{tick_name}",
+                    collection=collection,
+                    timer=incremental_timer,
+                )
+                t.tock("end")
+        compare_text(
+            "file_rendering_custom_tick_format.txt",
+            os.path.join(tmp_dir, "file_rendering_custom_tick_format.txt"),
+        )
+
+
 def test_set_format(caplog):
     renderer = StandardRenderer()
     collection = ClockCollection(renderer=renderer)

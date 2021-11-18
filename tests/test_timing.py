@@ -4,13 +4,13 @@ from ticktock import tick
 def test_timing_incremental(fresh_clock_collection, incremental_timer):
     clock = tick(collection=fresh_clock_collection, timer=incremental_timer)
     v = clock.tock()
-    assert v == 2
+    assert v == 1
     v = clock.tock()
-    assert v == 3
+    assert v == 2
 
     assert clock._tick_time_ns == 1
-    first_timer = list(clock.aggregate_times.values())[0]
-    second_timer = list(clock.aggregate_times.values())[1]
+    first_timer = list(clock.times.values())[0]
+    second_timer = list(clock.times.values())[1]
 
     assert first_timer.avg_time_ns == 1
     assert first_timer.std_time_ns == 0
@@ -34,8 +34,8 @@ def test_timing_constant(fresh_clock_collection, constant_timer):
         t.tock()
 
     clock = list(fresh_clock_collection.clocks.values())[0]
-    first_timer = list(clock.aggregate_times.values())[0]
-    second_timer = list(clock.aggregate_times.values())[1]
+    first_timer = list(clock.times.values())[0]
+    second_timer = list(clock.times.values())[1]
 
     assert first_timer.avg_time_ns == 0
     assert first_timer.std_time_ns == 0

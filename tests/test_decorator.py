@@ -10,7 +10,7 @@ def test_decorator_with_arguments(fresh_clock_collection):
     assert f(0.1) == 0.1
     assert len(fresh_clock_collection.clocks) == 1
     clock = next(iter(fresh_clock_collection.clocks.values()))
-    clock_times = list(clock.aggregate_times.values())
+    clock_times = list(clock.times.values())
     assert len(clock_times) == 1
     assert clock_times[0].n_periods == 1
     assert f(0.1) == 0.1
@@ -27,7 +27,7 @@ def test_decorator_no_arguments(fresh_clock_collection):
     assert f(0.1) == 0.1
     assert len(fresh_clock_collection.clocks) == 1
     clock = next(iter(fresh_clock_collection.clocks.values()))
-    clock_times = list(clock.aggregate_times.values())
+    clock_times = list(clock.times.values())
     assert len(clock_times) == 1
     assert clock_times[0].n_periods == 1
     assert f(0.1) == 0.1

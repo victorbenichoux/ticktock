@@ -1,11 +1,15 @@
 import abc
 import logging
+import os
 import sys
 from string import Formatter
-from typing import Callable, Iterable, List, Optional, TextIO
+from typing import TYPE_CHECKING, Callable, Iterable, List, Optional, TextIO
 
-from ticktock.data import ClockData
-from ticktock.utils import format_ns_interval, value_from_env
+from ticktock.data import AggregateTimes
+from ticktock.utils import TockName, format_ns_interval, value_from_env
+
+if TYPE_CHECKING:
+    from ticktock.timer import Clock
 
 try:
     import tqdm
@@ -27,30 +31,54 @@ TIME_FIELDS = {
     "last": lambda times: times.last_time_ns,
 }
 
-FIELDS = {
-    "count": lambda clock_data, times: times.n_periods,
-    "tick_name": lambda clock_data, times: clock_data.tick_name,
-    "tock_name": lambda clock_data, times: times.tock_name,
-    "tick_line": lambda clock_data, times: clock_data.tick_line,
-    "tock_line": lambda clock_data, times: times.tock_line,
-    "tick_filename": lambda clock_data, times: clock_data.tick_filename,
-    "tock_filename": lambda clock_data, times: times.tock_filename,
-    "avg_time_ns": lambda clock_data, times: times.avg_time_ns,
-    "std_time_ns": lambda clock_data, times: times.std_time_ns,
-    "min_time_ns": lambda clock_data, times: times.min_time_ns,
-    "max_time_ns": lambda clock_data, times: times.max_time_ns,
-    "last_time_ns": lambda clock_data, times: times.last_time_ns,
+
+def name_field_fn(clock: "Clock", times: AggregateTimes):
+    if clock.tick_name == TockName.DECORATOR:
+        return f"{clock.tick_name}"
+    if clock.tick_name:
+        if times.tock_name:
+            return f"{clock.tick_name}-{times.tock_name}"
+        else:
+            return f"{clock.tick_name}:{clock.tick_line}-{times.tock_line}"
+    else:
+        if os.path.exists(clock.tick_filename):
+            tick_name = os.path.basename(clock.tick_filename)
+        if times.tock_name:
+            return f"{tick_name}-{times.tock_name}"
+        else:
+            return f"{tick_name}:{clock.tick_line}-{times.tock_line}"
+
+
+CONSTANT_FIELDS = {
+    "name": name_field_fn,
+    "tick_name": lambda clock, times: clock.tick_name,
+    "tock_name": lambda clock, times: times.tock_name,
+    "tick_line": lambda clock, times: clock.tick_line,
+    "tock_line": lambda clock, times: times.tock_line,
+    "tick_filename": lambda clock, times: clock.tick_filename,
+    "tock_filename": lambda clock, times: times.tock_filename,
 }
+
+RAW_FIELDS = {
+    "count": lambda clock, times: times.n_periods,
+    "avg_time_ns": lambda clock, times: times.avg_time_ns,
+    "std_time_ns": lambda clock, times: times.std_time_ns,
+    "min_time_ns": lambda clock, times: times.min_time_ns,
+    "max_time_ns": lambda clock, times: times.max_time_ns,
+    "last_time_ns": lambda clock, times: times.last_time_ns,
+}
+
+FIELDS = {**RAW_FIELDS, **CONSTANT_FIELDS}
 
 
 class AbstractRenderer(abc.ABC):
-    def render(self, render_data: List[ClockData]) -> None:
+    def render(self, render_data: List["Clock"]) -> None:
         ...
 
 
 FORMATS = {
-    "short": "⏱️ [{tick_name}-{tock_name}] {mean} count={count}",
-    "long": "⏱️ [{tick_name}-{tock_name}] "
+    "short": "⏱️ [{name}] {mean} count={count}",
+    "long": "⏱️ [{name}] "
     "{mean} ({std} std) min={min} max={max}"
     " count={count} last={last}",
 }
@@ -93,11 +121,11 @@ class StandardRenderer(AbstractRenderer):
                 raise ValueError(f"Field {field_name} unknown in format string")
         self._has_printed = 0
 
-    def render(self, render_data: List[ClockData]) -> None:
+    def render(self, render_data: List["Clock"]) -> None:
         logger.debug("Rendering clock format={self._format}")
         ls: List[str] = []
-        for clock_data in render_data:
-            for line in self.render_times(clock_data):
+        for clock in render_data:
+            for line in self.render_times(clock):
                 ls.append(line)
         if has_tqdm:
             with tqdm.tqdm.external_write_mode(sys.stderr, nolock=True):
@@ -118,20 +146,20 @@ class StandardRenderer(AbstractRenderer):
             self._out.flush()
         self._has_printed = len(ls)
 
-    def render_times(self, clock_data: ClockData) -> Iterable[str]:
-        for times in clock_data.times.values():
+    def render_times(self, clock: "Clock") -> Iterable[str]:
+        if clock._format and clock._format != self._format:
+            self.set_format(clock._format)
+        for times in clock.times.values():
             yield (
                 ""
-                + self._format.format(
+                + (self._format).format(
                     **{
                         key: format_ns_interval(
                             TIME_FIELDS[key](times), max_terms=self._max_terms
                         )
                         for key in self._time_fields
                     },
-                    **{
-                        key: str(FIELDS[key](clock_data, times)) for key in self._fields
-                    },
+                    **{key: str(FIELDS[key](clock, times)) for key in self._fields},
                 )
             )
 
@@ -160,13 +188,13 @@ class LoggingRenderer(AbstractRenderer):
 
         self._log = _log
 
-    def render(self, render_data: List[ClockData]) -> None:
-        for clock_data in render_data:
-            for times in clock_data.times.values():
+    def render(self, render_data: List["Clock"]) -> None:
+        for clock in render_data:
+            for times in clock.times.values():
                 self._log(
                     "clock",
-                    tick_name=clock_data.tick_name,
-                    tock_name=clock_data.tick_name,
+                    tick_name=clock.tick_name,
+                    tock_name=times.tock_name,
                     mean=times.avg_time_ns * 1e9,
                     std=times.std_time_ns * 1e9,
                     min=times.min_time_ns * 1e9,

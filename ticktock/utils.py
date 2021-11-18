@@ -1,5 +1,6 @@
 import inspect
 import os
+from enum import Enum
 from typing import Tuple
 
 time_factors = [
@@ -48,3 +49,7 @@ def get_frame_info(level: int = 1) -> Tuple[str, int]:
         )
     else:
         return "<no frame info>", -1
+
+
+class TockName(Enum):
+    DECORATOR = 1

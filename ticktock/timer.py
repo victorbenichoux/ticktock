@@ -4,11 +4,11 @@ import logging
 import os
 import time
 import weakref
-from typing import Callable, Dict, Optional, Tuple
+from typing import Callable, Dict, Optional, Tuple, Union
 
-from ticktock.data import AggregateTimes, ClockData
+from ticktock.data import AggregateTimes
 from ticktock.renderers import AbstractRenderer, StandardRenderer
-from ticktock.utils import get_frame_info, value_from_env
+from ticktock.utils import TockName, get_frame_info, value_from_env
 
 logger = logging.getLogger("ticktock.timer")
 
@@ -39,17 +39,7 @@ class ClockCollection:
                 or time.perf_counter() - self._last_refresh_time_s > self._period
             )
         ):
-            self.renderer.render(
-                [
-                    ClockData(
-                        tick_name=clock.tick_name,
-                        tick_filename=clock.tick_filename,
-                        tick_line=clock.tick_line,
-                        times=clock.aggregate_times,
-                    )
-                    for clock in self.clocks.values()
-                ]
-            )
+            self.renderer.render([clock for clock in self.clocks.values()])
             self._last_refresh_time_s = time.perf_counter()
 
     def clear(self):
@@ -120,12 +110,14 @@ class Clock:
         name: Optional[str] = None,
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
-        tick_frame_info: Optional[Tuple[str, int]] = None,
+        frame_info: Optional[Tuple[str, int]] = None,
         timer: Optional[Callable[[], int]] = None,
+        format: Optional[str] = None,
         enabled: Optional[bool] = None,
     ) -> None:
         global _DEFAULT_COLLECTION
         self._enabled = enabled
+        self._format = format
         if self._enabled is None:
             self._enabled = not value_from_env("TICKTOCK_DISABLE", False)
 
@@ -133,7 +125,7 @@ class Clock:
 
         self.collection: ClockCollection = collection or _DEFAULT_COLLECTION
 
-        self.tick_filename, self.tick_line = tick_frame_info or get_frame_info(1)
+        self.tick_filename, self.tick_line = frame_info or get_frame_info(1)
         self._tick_id = name or f"{self.tick_filename}:{self.tick_line}"
         if not name:
             if os.path.exists(self.tick_filename):
@@ -143,7 +135,7 @@ class Clock:
         else:
             self.tick_name = name
 
-        self.aggregate_times: Dict[str, AggregateTimes] = {}
+        self.times: Dict[str, AggregateTimes] = {}
 
         self.collection.clocks[self._tick_id] = self
 
@@ -157,26 +149,26 @@ class Clock:
 
     def tock(
         self,
-        name: Optional[str] = None,
-        tock_frame_info: Optional[Tuple[str, int]] = None,
+        name: Optional[Union[str, TockName]] = None,
+        frame_info: Optional[Tuple[str, int]] = None,
     ) -> Optional[float]:
         if not self.is_enabled():
             return None
-        tock_filename, tock_line = tock_frame_info or get_frame_info(1)
-        tock_id = name or f"{tock_filename}:{tock_line}"
-        tock_name = name or str(tock_line)
+        tock_filename, tock_line = frame_info or get_frame_info(1)
+        tock_id = f"{tock_filename}:{tock_line}"
+        tock_name = name if name is not None else str(tock_line)
 
         tock_time_ns = self.timer()
 
         if self._tick_time_ns is None:
             raise ValueError(f"Clock {self.tick_name} was not ticked.")
 
-        if tock_id in self.aggregate_times:
-            self.aggregate_times[tock_id].update(tock_time_ns, self._tick_time_ns)
+        if tock_id in self.times:
+            self.times[tock_id].update(tock_time_ns, self._tick_time_ns)
             self.collection.update(force=False)
         else:
             dt = tock_time_ns - self._tick_time_ns
-            self.aggregate_times[tock_id] = AggregateTimes(
+            self.times[tock_id] = AggregateTimes(
                 tock_name=tock_name,
                 tock_line=tock_line,
                 tock_filename=tock_filename,
@@ -189,7 +181,7 @@ class Clock:
             )
 
             self.collection.update(force=True)
-        return tock_time_ns
+        return tock_time_ns - self._tick_time_ns
 
     def enable(self):
         self._enabled = True
@@ -203,14 +195,16 @@ class Clock:
     @staticmethod
     def _get_or_create_clock(
         name: str = None,
+        format: Optional[str] = None,
         collection: Optional[ClockCollection] = None,
         tick_time_ns: Optional[int] = None,
+        frame_info: Optional[Tuple[str, int]] = None,
         timer: Optional[Callable[[], int]] = None,
     ):
         global _DEFAULT_COLLECTION
         collection = collection or _DEFAULT_COLLECTION
-        tick_frame_info = get_frame_info(2)
-        filename, lineno = tick_frame_info
+        frame_info = frame_info or get_frame_info(2)
+        filename, lineno = frame_info
         if name and name in collection.clocks:
             return collection.clocks[name]
         elif f"{filename}:{lineno}" in collection.clocks:
@@ -218,21 +212,29 @@ class Clock:
         else:
             return Clock(
                 name=name,
+                format=format,
                 collection=collection,
                 tick_time_ns=tick_time_ns,
-                tick_frame_info=tick_frame_info,
+                frame_info=frame_info,
                 timer=timer,
             )
 
 
 def tick(
     name: str = None,
+    format: Optional[str] = None,
     collection: Optional[ClockCollection] = None,
     tick_time_ns: Optional[int] = None,
+    frame_info: Optional[Tuple[str, int]] = None,
     timer: Optional[Callable[[], int]] = None,
 ) -> Clock:
     clock = Clock._get_or_create_clock(
-        name=name, collection=collection, tick_time_ns=tick_time_ns, timer=timer
+        name=name,
+        format=format,
+        collection=collection,
+        tick_time_ns=tick_time_ns,
+        frame_info=frame_info,
+        timer=timer,
     )
     clock.tick()
     return clock
@@ -271,15 +273,20 @@ class ticktock:
         def _decorate(func):
             func_n_lines = len(inspect.getsource(func).split("\n")) - 2
             func_first_lineno = func.__code__.co_firstlineno
+            func_filename = func.__code__.co_filename
 
             def wrapper(*args, **kwargs):
                 t = tick(
-                    name=f"{func.__name__}:{func_first_lineno}",
+                    name=func.__name__,
+                    frame_info=(func_filename, func_first_lineno),
                     collection=self.collection,
                     timer=self.timer,
                 )
                 retval = func(*args, **kwargs)
-                t.tock(name=func_n_lines + func_first_lineno)
+                t.tock(
+                    name=TockName.DECORATOR,
+                    frame_info=(func_filename, func_n_lines + func_first_lineno),
+                )
                 return retval
 
             return wrapper
