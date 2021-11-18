@@ -11,7 +11,6 @@ from typing import (
     Iterable,
     List,
     Optional,
-    Protocol,
     TextIO,
     Union,
 )
@@ -92,15 +91,10 @@ FORMATS = {
 }
 
 
-class FormatFunction(Protocol):
-    def __call__(self, **kwargs) -> str:
-        ...
-
-
 @dataclass
 class FormattingData:
     format: str
-    precomputed_format: Dict[str, FormatFunction]
+    precomputed_format: Dict[str, Callable[..., str]]
     raw_fields: List[str]
     time_fields: List[str]
     constant_fields: List[str]
