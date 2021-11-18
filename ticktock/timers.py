@@ -9,30 +9,36 @@ from ticktock.utils import TockName
 
 
 class ticktock:
+    _func: Optional[Callable] = None
+
     def __init__(
         self,
-        name: str = None,
-        collection: Optional["ClockCollection"] = None,
+        *args,
+        name: str = "",
+        format: Optional[str] = None,
         timer: Optional[Callable[[], int]] = None,
+        enabled: Optional[bool] = None,
+        collection: Optional["ClockCollection"] = None,
     ) -> None:
-        self._func: Optional[Callable] = None
-        self.timer = timer
-        if callable(name):
-            self._func = name
-        else:
-            self.name = name
-            self.t = None
-        self.collection = collection
+        if args and callable(args[0]):
+            self._func = args[0]
+        self._name = name
+        self._format = format
+        self._timer = timer
+        self._collection = collection
+        self._enabled = enabled
 
     def __enter__(self):
-        self.t = tick(
-            name=self.name,
-            collection=self.collection,
-            timer=self.timer,
+        self.clock = tick(
+            name=self._name,
+            format=self._format,
+            timer=self._timer,
+            enabled=self._enabled,
+            collection=self._collection,
         )
 
     def __exit__(self, *_):
-        self.t.tock()
+        self.clock.tock()
 
     def __call__(self, *args, **kwargs):
         def _decorate(func):
@@ -42,10 +48,12 @@ class ticktock:
 
             def wrapper(*args, **kwargs):
                 t = tick(
-                    name=func.__name__,
+                    name=self._name or func.__name__,
+                    format=self._format,
+                    timer=self._timer,
+                    enabled=self._enabled,
+                    collection=self._collection,
                     frame_info=(func_filename, func_first_lineno),
-                    collection=self.collection,
-                    timer=self.timer,
                 )
                 retval = func(*args, **kwargs)
                 t.tock(

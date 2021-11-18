@@ -45,7 +45,7 @@ TIME_FIELDS = {
 
 
 def name_field_fn(clock: "Clock", times: AggregateTimes):
-    if clock.tick_name == TockName.DECORATOR:
+    if times.tock_name == TockName.DECORATOR:
         return f"{clock.tick_name}"
     if clock.tick_name:
         if times.tock_name:
