@@ -20,7 +20,6 @@ class Clock:
         timer: Optional[Callable[[], int]] = None,
         enabled: Optional[bool] = None,
         collection: Optional["ClockCollection"] = None,
-        tick_time_ns: Optional[int] = None,
         frame_info: Optional[Tuple[str, int]] = None,
     ) -> None:
         self._enabled = enabled
@@ -34,7 +33,7 @@ class Clock:
         self.tick_name = name
 
         self.times: Dict[str, AggregateTimes] = {}
-        self._tick_time_ns: Optional[int] = tick_time_ns
+        self._tick_time_ns: Optional[int] = None
 
         self.collection: "ClockCollection" = (
             collection or collection_module._DEFAULT_COLLECTION
@@ -101,7 +100,6 @@ def tick(
     timer: Optional[Callable[[], int]] = None,
     enabled: Optional[bool] = None,
     collection: Optional["ClockCollection"] = None,
-    tick_time_ns: Optional[int] = None,
     frame_info: Optional[Tuple[str, int]] = None,
 ) -> Clock:
     collection = collection or collection_module._DEFAULT_COLLECTION
@@ -116,7 +114,6 @@ def tick(
             name=name,
             format=format,
             collection=collection,
-            tick_time_ns=tick_time_ns,
             frame_info=frame_info,
             timer=timer,
             enabled=enabled,

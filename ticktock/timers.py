@@ -13,7 +13,6 @@ class ticktock:
         self,
         name: str = None,
         collection: Optional["ClockCollection"] = None,
-        tick_time_ns: Optional[int] = None,
         timer: Optional[Callable[[], int]] = None,
     ) -> None:
         self._func: Optional[Callable] = None
@@ -22,7 +21,6 @@ class ticktock:
             self._func = name
         else:
             self.name = name
-            self.tick_time_ns = tick_time_ns
             self.t = None
         self.collection = collection
 
@@ -30,7 +28,6 @@ class ticktock:
         self.t = tick(
             name=self.name,
             collection=self.collection,
-            tick_time_ns=self.tick_time_ns,
             timer=self.timer,
         )
 
