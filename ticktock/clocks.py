@@ -105,9 +105,7 @@ def tick(
     collection = collection or collection_module._DEFAULT_COLLECTION
     frame_info = frame_info or get_frame_info(1)
     filename, lineno = frame_info
-    if name and name in collection.clocks:
-        clock = collection.clocks[name]
-    elif f"{filename}:{lineno}" in collection.clocks:
+    if f"{filename}:{lineno}" in collection.clocks:
         clock = collection.clocks[f"{filename}:{lineno}"]
     else:
         clock = Clock(
