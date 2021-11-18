@@ -16,13 +16,13 @@ logger = logging.getLogger("ticktock.clocks")
 class Clock:
     def __init__(
         self,
-        name: Optional[str] = None,
+        name: str = None,
+        format: Optional[str] = None,
+        timer: Optional[Callable[[], int]] = None,
+        enabled: Optional[bool] = None,
         collection: Optional["ClockCollection"] = None,
         tick_time_ns: Optional[int] = None,
         frame_info: Optional[Tuple[str, int]] = None,
-        timer: Optional[Callable[[], int]] = None,
-        format: Optional[str] = None,
-        enabled: Optional[bool] = None,
     ) -> None:
         self._enabled = enabled
         if self._enabled is None:
@@ -105,11 +105,11 @@ class Clock:
 def tick(
     name: str = None,
     format: Optional[str] = None,
+    timer: Optional[Callable[[], int]] = None,
+    enabled: Optional[bool] = None,
     collection: Optional["ClockCollection"] = None,
     tick_time_ns: Optional[int] = None,
     frame_info: Optional[Tuple[str, int]] = None,
-    timer: Optional[Callable[[], int]] = None,
-    enabled: Optional[bool] = None,
 ) -> Clock:
     collection = collection or collection_module._DEFAULT_COLLECTION
     frame_info = frame_info or get_frame_info(1)
