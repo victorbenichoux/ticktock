@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from ticktock.collection import ClockCollection
 
 from ticktock.clocks import tick
-from ticktock.utils import _TockName
+from ticktock.utils import _TockName, get_frame_info
 
 
 class ticktock:
@@ -35,10 +35,11 @@ class ticktock:
             timer=self._timer,
             enabled=self._enabled,
             collection=self._collection,
+            frame_info=get_frame_info(1),
         )
 
     def __exit__(self, *_):
-        self.clock.tock(name=_TockName.CONTEXTMANAGER)
+        self.clock.tock(name=_TockName.CONTEXTMANAGER, frame_info=get_frame_info(1))
 
     def __call__(self, *args, **kwargs):
         def _decorate(func):
