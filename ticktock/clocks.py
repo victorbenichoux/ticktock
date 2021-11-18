@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 from ticktock import collection as collection_module
 from ticktock.data import AggregateTimes
-from ticktock.utils import TockName, get_frame_info, value_from_env
+from ticktock.utils import _TockName, get_frame_info, value_from_env
 
 logger = logging.getLogger("ticktock.clocks")
 
@@ -51,7 +51,7 @@ class Clock:
 
     def tock(
         self,
-        name: Union[str, TockName] = "",
+        name: Union[str, _TockName] = "",
         frame_info: Optional[Tuple[str, int]] = None,
     ) -> Optional[float]:
         if not self.is_enabled():

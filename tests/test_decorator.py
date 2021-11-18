@@ -1,7 +1,7 @@
 from ticktock.collection import ClockCollection, set_collection
 from ticktock.std import StandardRenderer
 from ticktock.timers import ticktock
-from ticktock.utils import TockName
+from ticktock.utils import _TockName
 
 
 def test_decorator_with_arguments(fresh_clock_collection):
@@ -16,10 +16,10 @@ def test_decorator_with_arguments(fresh_clock_collection):
     clock_times = list(clock.times.values())
     assert len(clock_times) == 1
     assert clock_times[0].count == 1
-    assert clock_times[0].tock_name == TockName.DECORATOR
+    assert clock_times[0].tock_name == _TockName.DECORATOR
     assert f(0.1) == 0.1
     assert clock_times[0].count == 2
-    assert clock_times[0].tock_name == TockName.DECORATOR
+    assert clock_times[0].tock_name == _TockName.DECORATOR
 
     assert next(StandardRenderer(format="{name}").render_times(clock)) == "KO"
 
@@ -38,10 +38,10 @@ def test_decorator_no_arguments(fresh_clock_collection):
     clock_times = list(clock.times.values())
     assert len(clock_times) == 1
     assert clock_times[0].count == 1
-    assert clock_times[0].tock_name == TockName.DECORATOR
+    assert clock_times[0].tock_name == _TockName.DECORATOR
     assert f(0.1) == 0.1
     assert clock_times[0].count == 2
-    assert clock_times[0].tock_name == TockName.DECORATOR
+    assert clock_times[0].tock_name == _TockName.DECORATOR
 
     assert next(StandardRenderer(format="{name}").render_times(clock)) == "f"
 

@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from ticktock.collection import ClockCollection
 
 from ticktock.clocks import tick
-from ticktock.utils import TockName
+from ticktock.utils import _TockName
 
 
 class ticktock:
@@ -38,7 +38,7 @@ class ticktock:
         )
 
     def __exit__(self, *_):
-        self.clock.tock(name=TockName.CONTEXTMANAGER)
+        self.clock.tock(name=_TockName.CONTEXTMANAGER)
 
     def __call__(self, *args, **kwargs):
         def _decorate(func):
@@ -57,7 +57,7 @@ class ticktock:
                 )
                 retval = func(*args, **kwargs)
                 t.tock(
-                    name=TockName.DECORATOR,
+                    name=_TockName.DECORATOR,
                     frame_info=(func_filename, func_n_lines + func_first_lineno),
                 )
                 return retval

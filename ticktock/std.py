@@ -18,7 +18,7 @@ from typing import (
 
 from ticktock.data import AggregateTimes
 from ticktock.renderers import AbstractRenderer
-from ticktock.utils import TockName, format_ns_interval
+from ticktock.utils import _TockName, format_ns_interval
 
 if TYPE_CHECKING:
     from ticktock.clocks import Clock
@@ -45,9 +45,9 @@ TIME_FIELDS = {
 
 
 def name_field_fn(clock: "Clock", times: AggregateTimes):
-    if times.tock_name == TockName.DECORATOR:
+    if times.tock_name == _TockName.DECORATOR:
         return clock.tick_name
-    if times.tock_name == TockName.CONTEXTMANAGER:
+    if times.tock_name == _TockName.CONTEXTMANAGER:
         if clock.tick_name:
             return clock.tick_name
     if clock.tick_name:
@@ -58,7 +58,7 @@ def name_field_fn(clock: "Clock", times: AggregateTimes):
     else:
         if os.path.exists(clock.tick_filename):
             tick_name = os.path.basename(clock.tick_filename)
-        if not isinstance(times.tock_name, TockName):
+        if not isinstance(times.tock_name, _TockName):
             return f"{tick_name}-{times.tock_name}"
         else:
             return f"{tick_name}:{clock.tick_line}-{times.tock_line}"
