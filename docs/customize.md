@@ -37,8 +37,9 @@ Keys are of two distinct types, *time keys* and normal keys. Time keys will be r
 
 Normal keys have properties related to the position of the tick or tock:
 
-- `tick_name`: the tick name if set when calling `tick`, otherwise equal to `{tick_filename}:{tick_line}`
-- `tock_name`: the tock name if set when calling `tock`, otherwise equal to `{tock_line}`
+- `name`: the name of the `Clock`. This should be the standard way to access a name, since it correctly handles the different cases (context manager, decorator, etc.) and uses the provided `name`s to `tick` and `tock`
+- `tick_name`: the tick name if set when calling `tick`
+- `tock_name`: the tock name if set when calling `tock`
 - `tick_line`: the line at which `tick` was called in your code
 - `tock_line`: the line at which `tock` was called in your code
 - `tick_filename`: the name of the file in which `tick` was called
@@ -48,11 +49,11 @@ In addition, two special cased formats are accepted too:
 
 - `short` with just the average time and the count 
 ```python
-"⏱️ [{tick_name}-{tock_name}] {mean} count={count}"
+"⏱️ [{name}] {mean} count={count}"
 ```
 - `long` corresponding to 
 ```python
-"⏱️ [{tick_name}-{tock_name}] {mean} ({std} std) min={min} max={max} count={count} last={last}"
+"⏱️ [{name}] {mean} ({std} std) min={min} max={max} count={count} last={last}"
 ```
 
 ### Units
