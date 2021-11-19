@@ -162,8 +162,7 @@ def test_log_rendering(caplog):
         t.tock()
     assert len(caplog.records) == 1
     for record in caplog.records:
-        assert hasattr(record, "tick_name")
-        assert hasattr(record, "tock_name")
+        assert hasattr(record, "clock_name")
         assert hasattr(record, "mean")
         assert hasattr(record, "std")
         assert hasattr(record, "min")

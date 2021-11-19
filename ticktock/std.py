@@ -15,12 +15,17 @@ from typing import (
     Union,
 )
 
-from ticktock.data import AggregateTimes
-from ticktock.renderers import AbstractRenderer
-from ticktock.utils import _TockName, format_ns_interval
+from ticktock.renderers import (
+    CONSTANT_FIELDS,
+    RAW_FIELDS,
+    TIME_FIELDS,
+    AbstractRenderer,
+)
+from ticktock.utils import format_ns_interval
 
 if TYPE_CHECKING:
     from ticktock.clocks import Clock
+    from ticktock.data import AggregateTimes
 
 try:
     import tqdm
@@ -33,55 +38,6 @@ logger = logging.getLogger("ticktock.renderers")
 
 UP: Callable[[int], str] = lambda x: f"\x1B[{x}A" if x else ""
 CLR = "\r\x1B[0K"
-
-TIME_FIELDS = {
-    "mean": lambda times: times.avg_time_ns,
-    "std": lambda times: times.std_time_ns,
-    "min": lambda times: times.min_time_ns,
-    "max": lambda times: times.max_time_ns,
-    "last": lambda times: times.last_time_ns,
-}
-
-
-def name_field_fn(clock: "Clock", times: AggregateTimes):
-    if times.tock_name == _TockName.DECORATOR:
-        return clock.tick_name
-    if times.tock_name == _TockName.CONTEXTMANAGER:
-        if clock.tick_name:
-            return clock.tick_name
-    if clock.tick_name:
-        if times.tock_name:
-            return f"{clock.tick_name}-{times.tock_name}"
-        else:
-            return f"{clock.tick_name}:{clock.tick_line}-{times.tock_line}"
-    else:
-        if os.path.exists(clock.tick_filename):
-            tick_name = os.path.basename(clock.tick_filename)
-        if not isinstance(times.tock_name, _TockName):
-            return f"{tick_name}-{times.tock_name}"
-        else:
-            return f"{tick_name}:{clock.tick_line}-{times.tock_line}"
-
-
-CONSTANT_FIELDS = {
-    "name": name_field_fn,
-    "tick_name": lambda clock, times: clock.tick_name,
-    "tock_name": lambda clock, times: times.tock_name,
-    "tick_line": lambda clock, times: clock.tick_line,
-    "tock_line": lambda clock, times: times.tock_line,
-    "tick_filename": lambda clock, times: clock.tick_filename,
-    "tock_filename": lambda clock, times: times.tock_filename,
-}
-
-RAW_FIELDS = {
-    "count": lambda clock, times: times.count,
-    "avg_time_ns": lambda clock, times: times.avg_time_ns,
-    "std_time_ns": lambda clock, times: times.std_time_ns,
-    "min_time_ns": lambda clock, times: times.min_time_ns,
-    "max_time_ns": lambda clock, times: times.max_time_ns,
-    "last_time_ns": lambda clock, times: times.last_time_ns,
-}
-
 
 FORMATS = {
     "short": "⏱️ [{name}] {mean} count={count}",
@@ -100,7 +56,7 @@ class FormattingData:
     constant_fields: List[str]
     max_terms: int
 
-    def render(self, clock: "Clock", tock_id: str, times: AggregateTimes) -> str:
+    def render(self, clock: "Clock", tock_id: str, times: "AggregateTimes") -> str:
         if tock_id not in self.precomputed_format:
             self.precomputed_format[tock_id] = partial(
                 self.format.format,
