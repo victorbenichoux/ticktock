@@ -18,6 +18,16 @@ class AbstractRenderer(abc.ABC):
         ...
 
 
+class MultipleRenderers(AbstractRenderer):
+    def __init__(self, renderers: List[AbstractRenderer]) -> None:
+        super().__init__()
+        self.renderers = renderers
+
+    def render(self, render_data: List["Clock"]) -> None:
+        for renderer in self.renderers:
+            renderer.render(render_data)
+
+
 TIME_FIELDS = {
     "mean": lambda times: times.avg_time_ns,
     "std": lambda times: times.std_time_ns,
