@@ -9,8 +9,18 @@ import pytest
 from tests import TEST_DIR
 from ticktock.clocks import tick
 from ticktock.collection import ClockCollection, set_collection, set_format
-from ticktock.renderers import LoggingRenderer
+from ticktock.renderers import LoggingRenderer, name_field_fn
 from ticktock.std import StandardRenderer
+
+
+def test_tick_filename_does_not_exist(fresh_clock_collection):
+    t = tick(collection=fresh_clock_collection)
+    t.tock()
+    clock = next(iter(fresh_clock_collection.clocks.values()))
+    clock.tick_filename = "<something/that/doesnt/exist>"
+    times = next(iter(clock.times.values()))
+
+    assert name_field_fn(clock, times).startswith("<something/that/doesnt/exist>")
 
 
 def compare_text(truth_fn, result_fn):
