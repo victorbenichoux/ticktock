@@ -97,9 +97,9 @@ class LoggingRenderer(AbstractRenderer):
                 self._log(
                     "clock",
                     clock_name=name_field_fn(clock, times),
-                    mean=times.avg_time_ns * 1e9,
-                    std=times.std_time_ns * 1e9,
-                    min=times.min_time_ns * 1e9,
-                    max=times.max_time_ns * 1e9,
+                    mean=times.avg_time_ns * 1e-9,
+                    std=times.std_time_ns * 1e-9,
+                    min=times.min_time_ns * 1e-9,
+                    max=times.max_time_ns * 1e-9,
                     count=times.count,
                 )
