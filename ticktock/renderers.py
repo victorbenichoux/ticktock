@@ -41,10 +41,9 @@ def name_field_fn(clock: "Clock", times: "AggregateTimes"):
     else:
         if os.path.exists(clock.tick_filename):
             tick_name = os.path.basename(clock.tick_filename)
-        if not isinstance(times.tock_name, _TockName):
-            return f"{tick_name}-{times.tock_name}"
         else:
-            return f"{tick_name}:{clock.tick_line}-{times.tock_line}"
+            tick_name = clock.tick_filename
+        return f"{tick_name}:{clock.tick_line}-{times.tock_line}"
 
 
 CONSTANT_FIELDS = {
