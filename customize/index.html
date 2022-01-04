@@ -1,0 +1,763 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Simple Python code metering library">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4">
+    
+    
+      
+        <title>Customize output - ticktock documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bb3983ee.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changing-format" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ticktock documentation" class="md-header__button md-logo" aria-label="ticktock documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ticktock documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Customize output
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/victorbenichoux/ticktock/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    victorbenichoux/ticktock
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ticktock documentation" class="md-nav__button md-logo" aria-label="ticktock documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    ticktock documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/victorbenichoux/ticktock/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    victorbenichoux/ticktock
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using_clocks/" class="md-nav__link">
+        Using clocks
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Customize output
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Customize output
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#changing-format" class="md-nav__link">
+    Changing format
+  </a>
+  
+    <nav class="md-nav" aria-label="Changing format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-format-string" class="md-nav__link">
+    Setting the format string
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format-string-keys" class="md-nav__link">
+    Format string keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#units" class="md-nav__link">
+    Units
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raw-time-fields" class="md-nav__link">
+    Raw time fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updated-lines" class="md-nav__link">
+    Updated lines
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#change-rendering-period" class="md-nav__link">
+    Change rendering period
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-or-disabling-clocks" class="md-nav__link">
+    Enabling or disabling clocks
+  </a>
+  
+    <nav class="md-nav" aria-label="Enabling or disabling clocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-an-environment-variable" class="md-nav__link">
+    With an environment variable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-enabledisable" class="md-nav__link">
+    With enable/disable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disabling-a-clock-vs-disabling-a-clockcollection" class="md-nav__link">
+    Disabling a Clock vs. disabling a ClockCollection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Advanced topics
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advanced topics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced topics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clocks/" class="md-nav__link">
+        Clocks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collection/" class="md-nav__link">
+        Collection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rendering/" class="md-nav__link">
+        Renderer
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#changing-format" class="md-nav__link">
+    Changing format
+  </a>
+  
+    <nav class="md-nav" aria-label="Changing format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-format-string" class="md-nav__link">
+    Setting the format string
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format-string-keys" class="md-nav__link">
+    Format string keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#units" class="md-nav__link">
+    Units
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raw-time-fields" class="md-nav__link">
+    Raw time fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updated-lines" class="md-nav__link">
+    Updated lines
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#change-rendering-period" class="md-nav__link">
+    Change rendering period
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-or-disabling-clocks" class="md-nav__link">
+    Enabling or disabling clocks
+  </a>
+  
+    <nav class="md-nav" aria-label="Enabling or disabling clocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-an-environment-variable" class="md-nav__link">
+    With an environment variable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-enabledisable" class="md-nav__link">
+    With enable/disable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disabling-a-clock-vs-disabling-a-clockcollection" class="md-nav__link">
+    Disabling a Clock vs. disabling a ClockCollection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+<a href="https://github.com/victorbenichoux/ticktock/edit/master/docs/customize.md" title="Edit this page" class="md-content__button md-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+</a>
+
+
+  <h1>Customize output</h1>
+
+<p><code>ticktock</code> defaults to writing clock times to <code>sys.stderr</code>.</p>
+<p>It is possible to <a href="#specifying-a-renderer">change the renderer used</a>, which is useful if you want to customize the output, or send log messages.</p>
+<h2 id="changing-format">Changing format<a class="headerlink" href="#changing-format" title="Permanent link">&para;</a></h2>
+<p>It is possible to change the output of <code>ticktock</code> clocks by changing the <em>format</em> string.</p>
+<h3 id="setting-the-format-string">Setting the format string<a class="headerlink" href="#setting-the-format-string" title="Permanent link">&para;</a></h3>
+<p>The format string is a regular Python format string describing the desired output. Set the format string for the current default clock using <code>set_format</code>.</p>
+<p>For example, to print the minimum and maximum times of a clock, one could write:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ticktock</span> <span class="kn">import</span> <span class="n">set_format</span>
+
+<span class="n">set_format</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{min}</span><span class="s2"> &lt; </span><span class="si">{mean}</span><span class="s2"> &lt; </span><span class="si">{max}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Equivalently, to globally set the format string, set the <code>TICKTOCK_DEFAULT_FORMAT</code> environment variable.</p>
+<h3 id="format-string-keys">Format string keys<a class="headerlink" href="#format-string-keys" title="Permanent link">&para;</a></h3>
+<p>The keys in the format string have to be amongst the available attributes, and will be replaced by their value at render.</p>
+<p>Keys are of two distinct types, <em>time keys</em> and normal keys. Time keys will be replaced by a string representing the timing value with its unit attached:</p>
+<ul>
+<li><code>mean</code>: the average of all past time intervals</li>
+<li><code>std</code>: the standard deviation of all past time intervals</li>
+<li><code>min</code>: the minimum measured time</li>
+<li><code>max</code>: the maximum measured time</li>
+<li><code>last</code>: the last measured time</li>
+<li><code>count</code>: the numer of intervals measured.</li>
+</ul>
+<p>Normal keys have properties related to the position of the tick or tock:</p>
+<ul>
+<li><code>name</code>: the name of the <code>Clock</code>. This should be the standard way to access a name, since it correctly handles the different cases (context manager, decorator, etc.) and uses the provided <code>name</code>s to <code>tick</code> and <code>tock</code></li>
+<li><code>tick_name</code>: the tick name if set when calling <code>tick</code></li>
+<li><code>tock_name</code>: the tock name if set when calling <code>tock</code></li>
+<li><code>tick_line</code>: the line at which <code>tick</code> was called in your code</li>
+<li><code>tock_line</code>: the line at which <code>tock</code> was called in your code</li>
+<li><code>tick_filename</code>: the name of the file in which <code>tick</code> was called</li>
+<li><code>tock_filename</code>: the name of the file in which <code>tock</code> was called</li>
+</ul>
+<p>In addition, two special cased formats are accepted too:</p>
+<ul>
+<li><code>short</code> with just the average time and the count 
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;⏱️ [</span><span class="si">{name}</span><span class="s2">] </span><span class="si">{mean}</span><span class="s2"> count=</span><span class="si">{count}</span><span class="s2">&quot;</span>
+</code></pre></div></li>
+<li><code>long</code> corresponding to 
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;⏱️ [</span><span class="si">{name}</span><span class="s2">] </span><span class="si">{mean}</span><span class="s2"> (</span><span class="si">{std}</span><span class="s2"> std) min=</span><span class="si">{min}</span><span class="s2"> max=</span><span class="si">{max}</span><span class="s2"> count=</span><span class="si">{count}</span><span class="s2"> last=</span><span class="si">{last}</span><span class="s2">&quot;</span>
+</code></pre></div></li>
+</ul>
+<h3 id="units">Units<a class="headerlink" href="#units" title="Permanent link">&para;</a></h3>
+<p>By default, <code>ticktock</code> renders <em>two unit levels</em> such that 1.3 seconds will be written as <code>1s300ms</code>, or 1 day and two hours and 50 minuts will be written as <code>1d2h</code>.</p>
+<p>If you need more precision, you can also set the number of units you want displayed using the <code>max_terms</code> keyword in <code>set_format</code> as so:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ticktock</span> <span class="kn">import</span> <span class="n">set_format</span>
+
+<span class="n">set_format</span><span class="p">(</span><span class="n">max_terms</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="raw-time-fields">Raw time fields<a class="headerlink" href="#raw-time-fields" title="Permanent link">&para;</a></h3>
+<p>You can access the raw (floating point) values of the time aggregates as keys in the <code>format</code> string as well.</p>
+<p>These are all recorded in nanoseconds (unless you specified a different <code>timer</code> function):</p>
+<ul>
+<li><code>avg_time_ns</code>:the average of all past time intervals</li>
+<li><code>std_time_ns</code>: the standard deviation of all past time intervals</li>
+<li><code>min_time_ns</code>: the minimum measured time</li>
+<li><code>max_time_ns</code>: the maximum measured time</li>
+<li><code>last_time_ns</code>: the last measured time</li>
+</ul>
+<h3 id="updated-lines">Updated lines<a class="headerlink" href="#updated-lines" title="Permanent link">&para;</a></h3>
+<p>By default, <code>ticktock</code> attempts to update the last clock lines it has displayed with the new values.</p>
+<p>However, it can be undesirable in some instandes:
+- it can fail if other things are being written to the stream (e.g. using <code>print</code> in the code, or using <code>tqdm</code>), or delete printed messages
+- it uses ASCII contol chars, which may be unwelcome if you are writing to a file</p>
+<p>If you want <code>ticktock</code> to write all clocks sequentially, without attempting to update previously renderered lines, set the format with <code>no_update=True</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ticktock</span> <span class="kn">import</span> <span class="n">set_format</span>
+
+<span class="n">set_format</span><span class="p">(</span><span class="n">no_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="change-rendering-period">Change rendering period<a class="headerlink" href="#change-rendering-period" title="Permanent link">&para;</a></h2>
+<p>By default, <code>ticktock</code> renders clocks with a fixed period of two seconds. This can be changed globally by using <code>set_period</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ticktock</span> <span class="kn">import</span> <span class="n">tick</span>
+
+<span class="n">set_period</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>Internally, <code>ticktock</code> will render all clocks whenever the period is elapsed, and a clock's <code>tock</code> was called. In addition to this, rendering also occurs:</p>
+<ul>
+<li>at the first <code>tock</code> of any clock</li>
+<li>when the program exits</li>
+</ul>
+<h2 id="enabling-or-disabling-clocks">Enabling or disabling clocks<a class="headerlink" href="#enabling-or-disabling-clocks" title="Permanent link">&para;</a></h2>
+<p>It is possible to disable <code>ticktock</code> clocks: when disabled, the intervals between ticks and tocks are no longer recorded, and will not be rendered either.</p>
+<h3 id="with-an-environment-variable">With an environment variable<a class="headerlink" href="#with-an-environment-variable" title="Permanent link">&para;</a></h3>
+<p>Set the <code>TICKTOCK_DISABLE</code> environment variable to disable all clocks and their rendering.</p>
+<h3 id="with-enabledisable">With <code>enable/disable</code><a class="headerlink" href="#with-enabledisable" title="Permanent link">&para;</a></h3>
+<p><code>ticktock</code> also provide functions to enable or disable all clocks (and rendering):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ticktock</span> <span class="kn">import</span> <span class="n">tick</span><span class="p">,</span> <span class="n">enable</span><span class="p">,</span> <span class="n">disable</span>
+
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">():</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">tick</span><span class="p">()</span>
+    <span class="k">pass</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">tock</span><span class="p">()</span>
+
+<span class="c1"># This call will be timed and collected</span>
+<span class="n">some_function</span><span class="p">()</span>
+
+<span class="n">disable</span><span class="p">()</span>
+<span class="c1"># This call will NOT be timed</span>
+<span class="n">some_function</span><span class="p">()</span>
+
+<span class="n">enable</span><span class="p">()</span>
+<span class="c1"># This call will be timed again</span>
+<span class="n">some_function</span><span class="p">()</span>
+</code></pre></div>
+<div class="admonition warn">
+<p class="admonition-title">Warn</p>
+<p><code>enable</code> and <code>disable</code> act on the current default <code>ClockCollection</code> (as set by <code>set_collection</code>)</p>
+</div>
+<h3 id="disabling-a-clock-vs-disabling-a-clockcollection">Disabling a <code>Clock</code> vs. disabling a <code>ClockCollection</code><a class="headerlink" href="#disabling-a-clock-vs-disabling-a-clockcollection" title="Permanent link">&para;</a></h3>
+<div class="admonition warn">
+<p class="admonition-title">Warn</p>
+<p>This is an advanced topic, and should not occur unless you set the enabled/disabled state of <code>Clock</code> objects directly.</p>
+</div>
+<p>Both <code>Clock</code> and <code>ClockCollection</code> objects can be enabled or disabled independently via their <code>enable</code>/<code>disable</code> methods.</p>
+<p>This can be misleading if a <code>Clock</code>'s state does not match its <code>ClockCollection</code> state.</p>
+<p>Simply put, here are the gotchas:</p>
+<ul>
+<li>a disabled <code>Clock</code> will not record any timing information, but if its <code>ClockCollection</code> is enabled, its state <em>will</em> be rendered</li>
+<li>disabling and enabling a <code>ClockCollection</code> will set the state of all of the <code>Clock</code>s that are <em>currently attached</em> to it</li>
+<li>disabling a clock <em>does not</em> disable its <code>ClockCollection</code></li>
+</ul>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../using_clocks/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using clocks" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Using clocks
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../clocks/" class="md-footer__link md-footer__link--next" aria-label="Next: Clocks" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Clocks
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.361d90f1.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.289a2a4b.min.js"></script>
+      
+    
+  </body>
+</html>
