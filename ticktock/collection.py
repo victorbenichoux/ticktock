@@ -4,6 +4,8 @@ import time
 import weakref
 from typing import TYPE_CHECKING, Dict, Optional
 
+import psutil
+
 if TYPE_CHECKING:
     from ticktock.renderers import AbstractRenderer
     from ticktock.clocks import Clock
@@ -111,6 +113,22 @@ def set_format(format: str = None, max_terms: int = None, no_update: bool = None
 
 @atexit.register
 def final_update():
+    for pid in psutil.pids():
+        # When testing code using ticktock and LoggingRenderer
+        # logging here would cause pytest to flood the output
+        # with logging errors.
+        # https://github.com/pytest-dev/pytest/issues/5502
+        # We chose to avoid logging the final messages in this
+        # context
+
+        # testing whether we are running in pytest is a pain
+        # https://docs.pytest.org/en/latest/example/simple.html#pytest-current-test-environment-variable
+        try:
+            environ = psutil.Process(pid).environ()
+            if "PYTEST_CURRENT_TEST" in environ:
+                return
+        except Exception:
+            pass
     for collection_ref in _ALL_COLLECTIONS:
         collection = collection_ref()
         if collection is not None:
